@@ -13,7 +13,7 @@ def fasta_2_dict(fas_file, simple_ID=True):
     WORKING
     """
     with open(fas_file, "r") as f:
-        seq_dict = {}
+        fas_dict = {}
                 
         # split each time a ">" in encountered        
         fasta = f.read().split('>')[1:]
@@ -26,17 +26,36 @@ def fasta_2_dict(fas_file, simple_ID=True):
             
             if simple_ID:
                 # for ex: for trinity output, split()[0] removes the len, path infos
-                seq_dict[ tmp[i][0].split()[0] ] = tmp[i][2].replace( "\n", "").upper()
+                fas_dict[ tmp[i][0].split()[0] ] = tmp[i][2].replace( "\n", "").upper()
             else:
-                seq_dict[ tmp[i][0] ] = tmp[i][2].replace( "\n", "").upper()
+                fas_dict[ tmp[i][0] ] = tmp[i][2].replace( "\n", "").upper()
 
-    return seq_dict
+    return fas_dict
 
 #-------------------------------------------------------------------------------
+def get_these_seqs(fas_dict, seq_id_lst):
+    """
+    Yield tuples (seq_id, seq) from a LIST of selected ids
+    """
+    for seq_id in seq_id_lst:
+            yield (seq_id, fas_dict[seq_id])
 
+#-------------------------------------------------------------------------------
+def print_to_fas(fas_dict, seq_id_lst, fas_out):
+    """
+    Print to the fas_out fasta file the selected seqs from the seq_ids LIST.
+    """
+    with open(fas_out, "w") as fout:
+        for seq_id, seq in get_these_seqs(fas_dict, seq_id_lst):
+            fout.write(">" + seq_id + "\n")
+            fout.write(seq + "\n")
+
+#-------------------------------------------------------------------------------
 if __name__ == "__main__":
     """
     FOR DEBUGGING
     """
     
-    print fasta_2_dict("demo_data/seq1.fas", False)
+    fas_dict = fasta_2_dict("demo_data/seq1.fas")
+    print_to_fas(fas_dict, ["seq1", "seq3"], "demo_data/myout")
+
