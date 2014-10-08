@@ -13,7 +13,7 @@ def fasta_2_dict(fas_file, simple_ID=True):
     WORKING
     """
     with open(fas_file, "r") as f:
-        fas_dict = {}
+        seq_dict = {}
                 
         # split each time a ">" in encountered        
         fasta = f.read().split('>')[1:]
@@ -26,29 +26,29 @@ def fasta_2_dict(fas_file, simple_ID=True):
             
             if simple_ID:
                 # for ex: for trinity output, split()[0] removes the len, path infos
-                fas_dict[ tmp[i][0].split()[0] ] = tmp[i][2].replace( "\n", "").upper()
+                seq_dict[ tmp[i][0].split()[0] ] = tmp[i][2].replace( "\n", "").upper()
             else:
-                fas_dict[ tmp[i][0] ] = tmp[i][2].replace( "\n", "").upper()
+                seq_dict[ tmp[i][0] ] = tmp[i][2].replace( "\n", "").upper()
 
-    return fas_dict
+    return seq_dict
 
 #-------------------------------------------------------------------------------
-def get_these_seqs(fas_dict, seq_id_lst):
+def get_these_seqs(seq_dict, seq_id_lst):
     """
     Yield tuples (seq_id, seq) from a LIST of selected ids
     """
     for seq_id in seq_id_lst:
-            yield (seq_id, fas_dict[seq_id])
+            yield (seq_id, seq_dict[seq_id])
 
 #-------------------------------------------------------------------------------
-def print_to_fas(fas_dict, seq_id_lst, fas_out):
+def write_to_fas(seq_dict, seq_id_lst, fas_out):
     """
-    Print to the fas_out fasta file the selected seqs from the seq_ids LIST.
+    Write to the fas_out fasta file the selected seqs from the seq_ids LIST.
     Each seq line got a maximum of 80 characters
     """
     with open(fas_out, "w") as fout:
 
-        for seq_id, seq in get_these_seqs(fas_dict, seq_id_lst):
+        for seq_id, seq in get_these_seqs(seq_dict, seq_id_lst):
             fout.write(">" + seq_id + "\n")
 
             # To cut seq lines each 80 characters
@@ -58,11 +58,29 @@ def print_to_fas(fas_dict, seq_id_lst, fas_out):
             fout.write(seq + "\n")
 
 #-------------------------------------------------------------------------------
+def print_summary(seq_dict):
+    """
+    Print out a summary of nucleotide sequences statistics
+    """
+    import basics_nuc_seq as bns
+    
+    all_GCs = bns.get_all_GCs(seq_dict)
+    all_lens = bns.get_all_lens(seq_dict)
+    n_seq = len(seq_dict)
+    N50 = bns.get_N50(seq_dict)
+
+    print "Total seqs: {0}".format(n_seq)
+    print "Mean GC: {0}".format(sum(all_GCs.values()) / float(n_seq))
+    print "Mean length: {0}".format(sum(all_lens.values()) / float(n_seq))
+    print "N50: {0}".format(N50)
+    print "Contigs in N50: {0}".format(len([x for x in all_lens.values() if x >= N50 ]))
+
+#-------------------------------------------------------------------------------
 if __name__ == "__main__":
     """
     FOR DEBUGGING
     """
     
-    fas_dict = fasta_2_dict("demo_data/seq1.fas")
-    print_to_fas(fas_dict, ["seq1", "seq3"], "demo_data/myout")
-
+    seq_dict = fasta_2_dict("demo_data/seq1.fas")
+#    write_to_fas(seq_dict, ["seq1", "seq3"], "demo_data/myout")
+    print_summary(seq_dict)
