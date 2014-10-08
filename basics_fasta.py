@@ -69,11 +69,12 @@ def print_summary(seq_dict):
     n_seq = len(seq_dict)
     N50 = bns.get_N50(seq_dict)
 
-    print "Total seqs: {0}".format(n_seq)
-    print "Mean GC: {0}".format(sum(all_GCs.values()) / float(n_seq))
-    print "Mean length: {0}".format(sum(all_lens.values()) / float(n_seq))
-    print "N50: {0}".format(N50)
-    print "Contigs in N50: {0}".format(len([x for x in all_lens.values() if x >= N50 ]))
+    print "Total seqs:\t{0}".format(n_seq)
+    print "Mean GC:\t{0}".format(sum(all_GCs.values()) / float(n_seq))
+    print "Mean length:\t{0}".format(sum(all_lens.values()) / float(n_seq))
+    print "Total length (in nucl):\t{0}".format(sum(all_lens.values()))
+    print "N50:\t{0}".format(N50)
+    print "Contigs in N50:\t{0}".format(len([x for x in all_lens.values() if x >= N50 ]))
 
 #-------------------------------------------------------------------------------
 if __name__ == "__main__":
