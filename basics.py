@@ -44,10 +44,17 @@ def get_these_seqs(fas_dict, seq_id_lst):
 def print_to_fas(fas_dict, seq_id_lst, fas_out):
     """
     Print to the fas_out fasta file the selected seqs from the seq_ids LIST.
+    Each seq line got a maximum of 80 characters
     """
     with open(fas_out, "w") as fout:
+
         for seq_id, seq in get_these_seqs(fas_dict, seq_id_lst):
             fout.write(">" + seq_id + "\n")
+
+            # To cut seq lines each 80 characters
+            while len(seq) > 80:
+                fout.write(seq[:80] + "\n")
+                seq =  seq[80:]
             fout.write(seq + "\n")
 
 #-------------------------------------------------------------------------------
