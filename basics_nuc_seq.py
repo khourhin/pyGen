@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 #-------------------------------------------------------------------------------
 def get_seq_GC(seq):
     """
@@ -13,41 +11,41 @@ def get_seq_GC(seq):
     return GC_content
 
 #-------------------------------------------------------------------------------
-def get_all_GCs(seq_dict):
+def get_all_GCs(seq_d):
     """
     From a seq_dict (fas2dict)
     Return all GCs as dictionnary with seqid as keys
     """
-    all_GCs = {k: get_seq_GC( seq_dict[k] ) for k in seq_dict }
+    GCs_d = {k: get_seq_GC( seq_d[k] ) for k in seq_d }
     
-    return all_GCs
+    return GCs_d
 
 #-------------------------------------------------------------------------------
-def get_all_lens(seq_dict):
+def get_all_lens(seq_d):
     """
     From a seq_dict (fas2dict):
     Return all lengths as dictionnary with seqid as keys
     """
-    all_lens = {k: len( seq_dict[k] ) for k in seq_dict }
+    lens_d = {k: len( seq_d[k] ) for k in seq_d }
 
-    return all_lens
+    return lens_d
 
 #-------------------------------------------------------------------------------
-def get_N50(seq_dict):
+def get_N50(seq_d):
     """
     From a seq_dict (fas2dict):
     Return the N50
     """
     import numpy 
 
-    all_lens = get_all_lens(seq_dict)
-    l_N50 = []
+    lens_d = get_all_lens(seq_d)
+    N50_l = []
 
-    for i in all_lens.values():
+    for i in lens_d.values():
         for j in range(i):
-            l_N50.append(i)
+            N50_l.append(i)
 
-    N50 = numpy.median(l_N50)
+    N50 = numpy.median(N50_l)
     return N50
 
 #-------------------------------------------------------------------------------
