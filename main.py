@@ -14,8 +14,12 @@ def file_stats(infile):
     if fc.isFasta(infile):
         print infile + " looks like a fasta file"
         fasta_stats(infile)
+
+    elif fc.isFastQ(infile):
+        print infile + " looks like a fastQ file"
+#        fastq_stats(infile)
     else:
-        raise IOError("Other formats than Fasta are not yet supported")
+        raise IOError("Formats others than Fasta or FastQ are not yet supported")
         
 #-------------------------------------------------------------------------------
 
