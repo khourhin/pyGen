@@ -1,3 +1,7 @@
+import basics_nuc_seq as bns
+import biographs as biog
+import numpy
+
 #-------------------------------------------------------------------------------
 def fasta_2_dict(fas_file, simple_ID=True):
     """

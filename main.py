@@ -1,16 +1,11 @@
 #! /usr/bin/python
+import basics_fasta as bfas
 
 #-------------------------------------------------------------------------------
-def fasta_stats(fasta, graphs_path=None)
+def fasta_stats(fasta, graphs_path=None):
 
-    import basics_nuc_seq as bns
-    import biographs as biog
-    import numpy
-    
-    seq_d = fasta_2_dict("demo_data/AP1.fas")
-    make_summary(seq_d, graphs_path)
-
-
+    seq_d = bfas.fasta_2_dict(fasta)
+    bfas.make_summary(seq_d, graphs_path)
 
 #-------------------------------------------------------------------------------
 
