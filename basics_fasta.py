@@ -1,5 +1,3 @@
-#! /usr/bin/python
-
 #-------------------------------------------------------------------------------
 def fasta_2_dict(fas_file, simple_ID=True):
     """
@@ -58,7 +56,7 @@ def write_to_fas(seq_d, seq_id_lst, fas_out):
             fout.write(seq + "\n")
 
 #-------------------------------------------------------------------------------
-def make_summary(seq_d, graphs_path):
+def make_summary(seq_d, graphs_path=None):
     """
     Print out a summary of nucleotide sequences statistics
     """
@@ -81,19 +79,7 @@ def make_summary(seq_d, graphs_path):
     print "Contigs in N50:\t{0}".format(len([x for x in lens_d.values() if x >= N50 ]))
 
     # Graphs:
-    biog.plot_hist(lens_d, graphs_path + "Contig_lengths_histo.png" )
-    
-#-------------------------------------------------------------------------------
-if __name__ == "__main__":
-    """
-    FOR DEBUGGING
-    """
+    if graphs_path:
+        biog.plot_hist(lens_d, graphs_path + "Contig_lengths_histo.png" )
 
-    import basics_nuc_seq as bns
-    import biographs as biog
-    import numpy
-    
-    seq_d = fasta_2_dict("demo_data/AP1.fas")
-    #    write_to_fas(seq_d, ["seq1", "seq3"], "demo_data/myout")
-    make_summary(seq_d, "./")
-    
+#-------------------------------------------------------------------------------
