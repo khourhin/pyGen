@@ -1,6 +1,7 @@
 #! /usr/bin/python
-import basics_fasta as bfas
 import format_check as fc
+import basics_fasta as bfas
+import basics_fastq as bfq
 
 #-------------------------------------------------------------------------------
 def fasta_stats(fasta, graphs_path=None):
@@ -17,9 +18,11 @@ def file_stats(infile):
 
     elif fc.isFastQ(infile):
         print infile + " looks like a fastQ file"
+        print "Casava version: " + bfq.get_casava_vers(infile)
+        bfq.check_ID_first_field(infile)
 #        fastq_stats(infile)
     else:
-        raise IOError("Formats others than Fasta or FastQ are not yet supported")
+        raise IOError("Formats others than Fasta oro FastQ are not yet supported")
         
 #-------------------------------------------------------------------------------
 
