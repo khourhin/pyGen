@@ -9,11 +9,11 @@ def get_casava_vers(fastq):
         line1 = f.readline().rstrip()
         
         if line1.endswith("/1") or line1.endswith("/2"):
-            return "before_casava1.8"
+            return "<1.8"
         else:
             line1 = line1.split()[1]
             if line1.startswith("1") or line1.startswith("2"):
-                return "after_casava1.8"
+                return ">1.8"
             else:
                 raise IOError("Your fastq seems neither casava1.8 or older")
 
@@ -36,3 +36,24 @@ def get_fq_ids(fastq):
             for i in range(3): next(f)
             
     return id_lst, cas_vers
+
+#-------------------------------------------------------------------------------
+def check_ID_first_field(fastq):
+    """
+    For testing, check if the first field (before first space) of the
+    ID line can be used as an unique identifier in any case. (This 
+    would make part of casava check obsolete I think ...)
+    """
+
+    id_list = []
+    with open(fastq, "r") as f:
+        for line in f:
+            id_list.append(line.split()[0])
+            for i in range(3): next(f)
+
+    if len(id_list) == len(set(id_list)):
+        print "First ID field seems unique"
+    else:
+        print "First ID field NOT unique"
+
+#-------------------------------------------------------------------------------
