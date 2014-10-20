@@ -5,7 +5,7 @@ def get_lst_from_file(infile):
     """
 
     with open(infile, "r") as f:
-        elmt_l =  [ line for line in f]
+        elmt_l =  [ line.strip() for line in f]
         
     return elmt_l
 
