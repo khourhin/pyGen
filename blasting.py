@@ -14,14 +14,14 @@ def format_db(fasta):
     return out, err
 
 #-------------------------------------------------------------------------------
-def do_blast(query, db, outfile):
+def do_blastN(query, db, outfile):
     """
     Launched a blast analysis for the [query] against the [db]
     """
     cmd = [PATH_BLAST + 'blastn', '-query', query, '-db', db, '-out', outfile,
            '-outfmt', '6', '-evalue', '1e-6' ]
-    proc = subprocess.Popen( cmd, 
-                             stdout=subprocess.PIPE)
+    proc = subprocess.Popen( cmd, stdout=subprocess.PIPE)
     out, err = proc.communicate()
 
+#-------------------------------------------------------------------------------
 
