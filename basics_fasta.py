@@ -1,6 +1,7 @@
 import basics_nuc_seq as bns
 import biographs as biog
 import numpy
+import random
 
 #-------------------------------------------------------------------------------
 def fasta_2_dict(fas_file, simple_ID=True):
@@ -43,14 +44,22 @@ def get_these_seqs(seq_d, seq_id_lst):
             yield (seq_id, seq_d[seq_id])
 
 #-------------------------------------------------------------------------------
-def write_to_fas(seq_d, seq_id_lst, fas_out):
+def get_random_seqs(seq_d, nseq):
+    """
+    Return an iterator of tuples for 'nseq' randomly selected sequences
+    """
+    seqids_l = random.sample( seq_d.keys(), nseq)
+    return get_these_seqs(seq_d, seqids_l)
+
+#-------------------------------------------------------------------------------
+def write_to_fas(seq_i, fas_out):
     """
     Write to the fas_out fasta file the selected seqs from the seq_ids LIST.
     Each seq line got a maximum of 80 characters
     """
     with open(fas_out, "w") as fout:
 
-        for seq_id, seq in get_these_seqs(seq_d, seq_id_lst):
+        for seq_id, seq in seq_i:
             fout.write(">" + seq_id + "\n")
 
             # To cut seq lines each 80 characters
