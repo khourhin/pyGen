@@ -60,12 +60,12 @@ def write_as_fas(seq_i):
     for seq_id, seq in seq_i:
         print(">" + seq_id + "\n")
 
-            # To cut seq lines each 80 characters
-            while len(seq) > 80:
-                print(seq[:80] + "\n")
-                seq =  seq[80:]
-            print(seq + "\n")
-
+        # To cut seq lines each 80 characters
+        while len(seq) > 80:
+            print(seq[:80] + "\n")
+            seq =  seq[80:]
+        print(seq + "\n")
+            
 #-------------------------------------------------------------------------------
 def make_summary(seq_d, graphs_path=None):
     """
