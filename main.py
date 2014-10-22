@@ -13,12 +13,11 @@ def sample_fasta(fasta, nseq, outfile="default_out.fas"):
     bfas.write_to_fas(seq_i, outfile)
 
 #-------------------------------------------------------------------------------
-def subset_fasta(fasta, ids_file, outfile="default_out.fas"):
+def subset_fasta(fasta, seqids_l, outfile="default_out.fas"):
     """
     Get a subset of the fasta file with only the sequence which ids are in 
     ids_file.
     """
-    seqids_l = common.get_lst_from_file(ids_file)
     seq_d = bfas.fasta_2_dict(fasta)
     seq_i = bfas.get_these_seqs(seq_d, seqids_l)
     bfas.write_to_fas(seq_i, outfile)
@@ -61,6 +60,7 @@ if __name__ == "__main__":
 
     # So far set by default:
     BLAST_OUT = "blast_out.tab"
+    
 
     parser = argparse.ArgumentParser(description='Unified Bioinformatician')
     parser.add_argument("infile", help="the input file")
@@ -77,7 +77,7 @@ if __name__ == "__main__":
             sample_fasta(args.infile, args.random)
 
         if args.subset:
-            subset_fasta(args.infile, args.subset)
+            subset_fasta(args.infile, common.get_lst_from_file(args.subset))
 
         if args.blastNdb:
             blastN(args.infile, args.blastNdb, BLAST_OUT)
