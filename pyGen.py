@@ -7,20 +7,20 @@ import common
 import argparse
 
 #-------------------------------------------------------------------------------
-def sample_fasta(fasta, nseq, outfile="default_out.fas"):
+def sample_fasta(fasta, nseq):
     seq_d = bfas.fasta_2_dict(fasta)
     seq_i = bfas.get_random_seqs(seq_d, nseq)
-    bfas.write_to_fas(seq_i, outfile)
+    bfas.write_as_fas(seq_i)
 
 #-------------------------------------------------------------------------------
-def subset_fasta(fasta, seqids_l, outfile="default_out.fas"):
+def subset_fasta(fasta, seqids_l):
     """
     Get a subset of the fasta file with only the sequence which ids are in 
     ids_file.
     """
     seq_d = bfas.fasta_2_dict(fasta)
     seq_i = bfas.get_these_seqs(seq_d, seqids_l)
-    bfas.write_to_fas(seq_i, outfile)
+    bfas.write_as_fas(seq_i)
 
 #-------------------------------------------------------------------------------
 def fasta_stats(fasta, graphs_path=None):

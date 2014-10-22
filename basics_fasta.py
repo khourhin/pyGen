@@ -58,13 +58,13 @@ def write_as_fas(seq_i):
     Each seq line got a maximum of 80 characters
     """
     for seq_id, seq in seq_i:
-        print(">" + seq_id + "\n")
+        print(">" + seq_id)
 
         # To cut seq lines each 80 characters
         while len(seq) > 80:
-            print(seq[:80] + "\n")
+            print(seq[:80])
             seq =  seq[80:]
-        print(seq + "\n")
+        print(seq)
             
 #-------------------------------------------------------------------------------
 def make_summary(seq_d, graphs_path=None):
