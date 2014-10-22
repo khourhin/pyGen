@@ -52,21 +52,19 @@ def get_random_seqs(seq_d, nseq):
     return get_these_seqs(seq_d, seqids_l)
 
 #-------------------------------------------------------------------------------
-def write_to_fas(seq_i, fas_out):
+def write_as_fas(seq_i):
     """
-    Write to the fas_out fasta file the selected seqs from the seq_ids LIST.
+    Write to stdout a fasta file with  the selected seqs from the seq_ids LIST.
     Each seq line got a maximum of 80 characters
     """
-    with open(fas_out, "w") as fout:
-
-        for seq_id, seq in seq_i:
-            fout.write(">" + seq_id + "\n")
+    for seq_id, seq in seq_i:
+        print(">" + seq_id + "\n")
 
             # To cut seq lines each 80 characters
             while len(seq) > 80:
-                fout.write(seq[:80] + "\n")
+                print(seq[:80] + "\n")
                 seq =  seq[80:]
-            fout.write(seq + "\n")
+            print(seq + "\n")
 
 #-------------------------------------------------------------------------------
 def make_summary(seq_d, graphs_path=None):

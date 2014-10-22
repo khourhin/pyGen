@@ -68,10 +68,12 @@ if __name__ == "__main__":
                         help="Return a random sample of 'R' sequences  ")
     parser.add_argument("-s", "--subset", help="Path to file with seqids to keep")
     parser.add_argument("-bN","--blastNdb", help="A fasta file to blast against")
+    parser.add_argument("-S","--stats", help="Get stats")
     args = parser.parse_args()
 
     if args.infile:
-        file_stats(args.infile)
+        if args.stats:
+            file_stats(args.infile)
 
         if args.random:
             sample_fasta(args.infile, args.random)
