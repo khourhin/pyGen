@@ -1,5 +1,7 @@
 import subprocess
 
+PATH_BLAST = '/home/tiennou/Documents/Taff/softwares/RNA-seq/blast+/bin/'
+
 #-------------------------------------------------------------------------------
 def format_db(fasta):
     """
@@ -7,8 +9,7 @@ def format_db(fasta):
     """
 
     cmd = [PATH_BLAST + 'makeblastdb', '-dbtype', 'nucl', '-in', fasta ]
-    proc = subprocess.Popen( cmd, 
-                             stdout=subprocess.PIPE)
+    proc = subprocess.Popen( cmd, stdout=subprocess.PIPE)
     out, err = proc.communicate()
 
     return out, err
