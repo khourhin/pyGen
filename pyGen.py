@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 import format_check as fc
 import basics_fasta as bfas
 import basics_fastq as bfq
