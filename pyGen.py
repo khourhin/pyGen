@@ -6,6 +6,10 @@ import blasting as blst
 import common
 import argparse
 
+################################################################################
+# A LIBRARY FOR GENETIC AND NGS DATA ANALYSIS
+################################################################################
+
 #-------------------------------------------------------------------------------
 def sample_fasta(fasta, nseq):
     seq_d = bfas.fasta_2_dict(fasta)
