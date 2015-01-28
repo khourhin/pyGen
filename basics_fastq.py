@@ -57,3 +57,23 @@ def check_ID_first_field(fastq):
         print "First ID field NOT unique"
 
 #-------------------------------------------------------------------------------
+def gen_reads(seq_d, rds_len, rds_n):
+    """
+    Create a number rds_n of paired reads of length rds_len from a seq
+    dictionnary.
+    """
+    insert_size = 200
+
+    for i in range(1,rds_n):
+        seq_id = random.choice(seq_d.keys())
+        # Define the maximum start point for the fragment to start
+        max_start = len(seq_d[seq_id]) - rds_len * 2 - insert_size
+        frag_start = random.randrange(0, max_start)
+        frag_end = frag_start + rds_len * 2 + insert_size
+        read_l = seq_d[seq_id][ frag_start : (frag_start + rds_len) ]
+        read_r = seq_d[seq_id][ frag_end - rds_len: frag_end ]
+        
+        with open("my_reads_l.fas", "a") as f:
+            f.write("@{}_{}/1\n{}\n+{}_{}/1\n{}\n".format(seq_id, i, read_l, seq_id ,i, "A"* rds_len))
+        with open("my_reads_r.fas", "a") as f:
+            f.write("@{}_{}/1\n{}\n+{}_{}/1\n{}\n".format(seq_id, i, read_r, seq_id ,i, "A"* rds_len))

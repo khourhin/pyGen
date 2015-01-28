@@ -36,11 +36,20 @@ def fasta_2_dict(fas_file, simple_ID=True):
     return seq_d
 
 #-------------------------------------------------------------------------------
-def get_these_seqs(seq_d, seq_id_lst):
+def filter_by_id(seq_d, seq_id_lst):
     """
     Yield tuples (seq_id, seq) from a LIST of selected ids
     """
     for seq_id in seq_id_lst:
+            yield (seq_id, seq_d[seq_id])
+
+#-------------------------------------------------------------------------------
+def filter_by_len(seq_d, len_thres):
+    """
+    Yield tuples (seq_id,seq) of sequences with length >= len_thres
+    """
+    for seq_id in seq_d:
+        if len(seq_d[ seq_id ]) >= len_thres:
             yield (seq_id, seq_d[seq_id])
 
 #-------------------------------------------------------------------------------
@@ -49,7 +58,7 @@ def get_random_seqs(seq_d, nseq):
     Return an iterator of tuples for 'nseq' randomly selected sequences
     """
     seqids_l = random.sample( seq_d.keys(), nseq)
-    return get_these_seqs(seq_d, seqids_l)
+    return filter_by_id(seq_d, seqids_l)
 
 #-------------------------------------------------------------------------------
 def write_as_fas(seq_i):

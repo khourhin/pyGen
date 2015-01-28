@@ -3,7 +3,7 @@
 import sys
 
 #-------------------------------------------------------------------------------
-def parse_b2go(annot_f, annot_d):
+def parse_b2go(annot_f, annot_d=None):
     """
     Parse the annotation file out of b2go i.e ".annot"
     Return a seqids dict of dicts with:
@@ -16,6 +16,10 @@ def parse_b2go(annot_f, annot_d):
             seq_id = line[0]
 
             # Create a dict entry if new seqid
+            # This is weird (should it be created out of the for loop ?)
+            if not annot_d:
+                annot_d = {}
+
             if seq_id not in annot_d:
                 annot_d[seq_id] = {}
 
@@ -29,7 +33,7 @@ def parse_b2go(annot_f, annot_d):
                 elif i.startswith("EC:"):
                     annot_d[ seq_id ].setdefault("ECs", []).append(i)
 
-                    # Should not have more than 1 annot but for double checking
+                    # Should not have more than 1 annot but for doublec hecking
                 else:
                     annot_d[ seq_id ].setdefault("annot",[]).append(i)
 
@@ -64,16 +68,15 @@ def print_annot(annot_d):
     "SeqId","annot", "ECs", "GOs"
     """
 
-    print "\t".join(["SeqId","annot", "ECs", "GOs"])
+    print "\t".join(["SeqId","annot","KEGG", "ECs", "GOs"])
     for seqid in annot_d:
         seq_d = annot_d[seqid]
 
         GOs = ",".join(seq_d["GOs"])
         annot = ",".join(seq_d["annot"])
-        KEGG = seq_d["KEGG"]
-        
-        if "ECs" in seq_d:
-            ECs = ",".join(seq_d["ECs"])
+
+        KEGG = seq_d["KEGG"] if "KEGG" in seq_d else "NA"
+        ECs = ",".join(seq_d["ECs"]) if "ECs" in seq_d else "NA"
 
         print "\t".join([seqid, annot, KEGG, ECs, GOs])
 

@@ -19,7 +19,7 @@ def subset_fasta(fasta, seqids_l):
     ids_file.
     """
     seq_d = bfas.fasta_2_dict(fasta)
-    seq_i = bfas.get_these_seqs(seq_d, seqids_l)
+    seq_i = bfas.filter_by_id(seq_d, seqids_l)
     bfas.write_as_fas(seq_i)
 
 #-------------------------------------------------------------------------------
