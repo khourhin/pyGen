@@ -60,7 +60,6 @@ def file_stats(infile):
         raise IOError("Formats others than Fasta oro FastQ are not yet supported")
         
 #-------------------------------------------------------------------------------
-
 if __name__ == "__main__":
 
 
@@ -74,7 +73,7 @@ if __name__ == "__main__":
                         help="Return a random sample of 'R' sequences  ")
     parser.add_argument("-s", "--subset", help="Path to file with seqids to keep")
     parser.add_argument("-bN","--blastNdb", help="A fasta file to blast against")
-    parser.add_argument("-S","--stats", help="Get stats")
+    parser.add_argument("-S","--stats", action="store_true", help="Get stats")
     args = parser.parse_args()
 
     if args.infile:

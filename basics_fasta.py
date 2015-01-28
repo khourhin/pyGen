@@ -49,7 +49,7 @@ def filter_by_len(seq_d, len_thres):
     Yield tuples (seq_id,seq) of sequences with length >= len_thres
     """
     for seq_id in seq_d:
-        if len(seq_d[ seq_id ]) >= len_thres:
+        if len(seq_d[ seq_id ]) >= int(len_thres):
             yield (seq_id, seq_d[seq_id])
 
 #-------------------------------------------------------------------------------
