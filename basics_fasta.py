@@ -29,11 +29,18 @@ def fasta_2_dict(fas_file, simple_ID=True):
             
             if simple_ID:
                 # for ex: for trinity output, split()[0] removes the len, path infos
-                seq_d[ tmp[i][0].split()[0] ] = tmp[i][2].replace( "\n", "").upper()
+                seq_d[ tmp[i][0].split()[0] ] = tmp[i][2].replace( "\n", "").upper()                
             else:
                 seq_d[ tmp[i][0] ] = tmp[i][2].replace( "\n", "").upper()
 
+    # Check if no empty sequences
+    empty_seqs = [k for k in seq_d if len(seq_d[k]) == 0]
+    if empty_seqs:
+        raise IOError("Something seems wrong with this sequence:\n" 
+                      + "\n".join(empty_seqs))
+
     return seq_d
+
 
 #-------------------------------------------------------------------------------
 def filter_by_id(seq_d, seq_id_lst):

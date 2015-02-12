@@ -57,7 +57,7 @@ def file_stats(infile):
         bfq.check_ID_first_field(infile)
 #        fastq_stats(infile)
     else:
-        raise IOError("Formats others than Fasta oro FastQ are not yet supported")
+        raise IOError("Formats others than Fasta or FastQ are not yet supported")
         
 #-------------------------------------------------------------------------------
 if __name__ == "__main__":
