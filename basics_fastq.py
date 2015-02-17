@@ -18,6 +18,69 @@ def get_casava_vers(fastq):
                 raise IOError("Your fastq seems neither casava1.8 or older")
 
 #-------------------------------------------------------------------------------
+def get_reads(fastq):
+    """
+    Return an iterator with all the reads
+    """
+
+    with open(fastq, "r") as f:
+
+        try:
+            for line in f:
+                seq_id = line.strip()
+                seq = f.next().strip()
+                f.next()
+                qual = f.next().strip()
+
+                yield(seq_id, seq, qual)
+
+        except StopIteration:
+            raise IOError(
+                "Can not read the fastq file: {}\nIs it a properly formatted fastq ?".format(fastq))
+                
+#-------------------------------------------------------------------------------
+def filter_qual(fastq, fastq_out):
+    """
+    Perform the filter from Zhao 2011
+    
+    Filt 1:
+    "reads that did not contain at least 41 Q20 bases among the
+    first 51 cycles were removed."
+
+    Filt 2:
+    "Low quality (<Q20) 3prim" trimmed off 
+    """
+    # Quality dictionnaries:
+    #---------------------------------------------------------------------------
+    p33 = [ chr(i) for i in range(33,74) ]
+    p33_d = { k:v for (k,v) in zip( p33, range(0,41) ) }
+
+    reads = get_reads(fastq)
+
+    with open(fastq_out, "w") as fout:
+        for seq_id, seq, qual in reads:
+            
+            # translate phred+33 to num
+            quals = [ p33_d[q] for q in qual ]
+
+            # Filt 1:
+            if len([ q for q in quals[0:52] if q >= 20 ]) < 41:
+                pass
+
+            else:
+
+                #Filt 2:
+                last_qual = quals[-1]
+                while seq and last_qual < 20:
+                    seq = seq[:-1]
+                    qual = qual[:-1]
+                    quals = quals[:-1]
+                    last_qual = quals[-1]
+
+                fout.write("{0}\n{1}\n{2}\n{3}\n".format(seq_id, seq, "+", qual))
+
+            
+#-------------------------------------------------------------------------------
 def get_fq_ids(fastq):
     """
     Get all sequences id from a fastq file and return then along with the casava
