@@ -74,6 +74,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--subset", help="Path to file with seqids to keep")
     parser.add_argument("-bN","--blastNdb", help="A fasta file to blast against")
     parser.add_argument("-S","--stats", action="store_true", help="Get stats")
+    parser.add_argument("-Z","--tempScript", action="store_true", help="Tmp stuff")
     args = parser.parse_args()
 
     if args.infile:
@@ -88,3 +89,7 @@ if __name__ == "__main__":
 
         if args.blastNdb:
             blastN(args.infile, args.blastNdb, BLAST_OUT)
+
+        if args.filter:
+            # Filter fastq like Zhao 2011
+            bfq.filter_qual(args.infile, "filtered_out.fq")
