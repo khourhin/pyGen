@@ -90,6 +90,6 @@ if __name__ == "__main__":
         if args.blastNdb:
             blastN(args.infile, args.blastNdb, BLAST_OUT)
 
-        if args.filter:
+        if args.tempScript:
             # Filter fastq like Zhao 2011
             bfq.filter_qual(args.infile, "filtered_out.fq")
