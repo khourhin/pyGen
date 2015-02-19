@@ -9,25 +9,26 @@ def get_xml_res(blast_xml):
 
     from Bio.Blast import NCBIXML
 
-    res = open(blast_xml, "r")
-    blast_records = NCBIXML.parse(res)
-    return blast_records
-    res.close()
+    with open(blast_xml, "r") as res:
+
+        for blast_record in NCBIXML.parse(res):
+            yield blast_record
 
 #-------------------------------------------------------------------------------
-def filter_res(blast_rec, evalue):
+def filter_res(blast_xml, evalue):
     """
     Filter blast record
     """
     pass
 
 #-------------------------------------------------------------------------------
-def get_best_records(blast_recs):
+def get_best_records(blast_xml):
     """
     From https://sites.google.com/site/xzhou82/Home/computer/python/biopython
     """
+    
+    for record in get_xml_res(blast_xml):
 
-    for record in blast_recs:
         for align in record.alignments:
             hsp = align.hsps[0]
             # Remove spaces from the query ID
@@ -38,7 +39,7 @@ def get_best_records(blast_recs):
             break
     
 #-------------------------------------------------------------------------------
-def print_blast_records(blast_recs):
+def print_blast_records(blast_xml):
     """
     Print a blast records in tab delimited format with fields as:
 
@@ -60,7 +61,8 @@ def print_blast_records(blast_recs):
     ====== ========= ============================================
     """
     
-    for blast_rec in blast_recs:
+    for blast_rec in get_xml_res(blast_xml):
+        
         for alignment in blast_rec.alignments:
             for hsp in alignment.hsps:
 
@@ -89,7 +91,7 @@ def print_blast_records(blast_recs):
                 print "\t".join(values)
 
 #-------------------------------------------------------------------------------
-def print_gff(blast_recs):
+def print_gff(blast_xml):
     """
     IN DVPT: NOT WORKING
     TO CHECK MORE PROPERLY DEF OF GFF
@@ -98,7 +100,8 @@ def print_gff(blast_recs):
     PBS:
     STRAND DOES NOT seems to work (returning None None)
     """
-    for blast_rec in blast_recs:
+    for blast_rec in get_xml_res(blast_xml):
+        
         for alignment in blast_rec.alignments:
             for hsp in alignment.hsps:
 
@@ -139,16 +142,13 @@ if __name__ == "__main__":
    args = parser.parse_args()
 
    # Return result to standart out
-   #blast_rec = get_xml_res(args.infile)
-   #print_blast_records(blast_rec)
+   #print_blast_records(args.infile)
 
    #Only best records:
-   blast_rec = get_xml_res(args.infile)
-   print 'Query\tHit description\t%identity\tE-value\tScore'
-   for i in get_best_records(blast_rec):
+   print 'Query\tHit_description\t%identity\talignment_length\tE-value\tScore'
+   for i in get_best_records(args.infile):
        print "\t".join([str(x) for x in i])
 
 
    #Return a gff
-   # blast_rec = get_xml_res(args.infile)
-   # print_gff(blast_rec)
+   # print_gff(args.infile)
