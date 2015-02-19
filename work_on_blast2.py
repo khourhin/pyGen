@@ -34,7 +34,7 @@ def get_best_records(blast_recs):
             queryID = record.query.split()[0]
             dbID = align.accession + align.title
             id_percent = float(hsp.identities) / hsp.align_length *100
-            yield (queryID, dbID, id_percent, hsp.expect, hsp.score)
+            yield (queryID, dbID, id_percent, hsp.align_length, hsp.expect, hsp.score)
             break
     
 #-------------------------------------------------------------------------------
