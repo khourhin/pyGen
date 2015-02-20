@@ -56,14 +56,14 @@ def fastq_stats(fastq):
     rds_len = []
     GC_content = []
     N_count = 0
+
+    log.info("Computing statistics ...")
     
     for seq_id, seq, qual in rds:
 
         rds_len.append( len(seq) )
         GC_content.append( bns.get_seq_GC(seq) )
         N_count += seq.count("N")
-
-    log.info("Computing statistics ...")
 
     print "Reads statistics:"
     print "Total #reads: {}M".format( len(rds_len) /1.0e6 )
