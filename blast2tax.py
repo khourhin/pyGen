@@ -8,6 +8,8 @@
 # ISSUES: lots of entries doesnt get taxonomy but seems to be from the
 # updating of the db (records disapearing from genbank)
 
+DB_PATH = "/home/tiennou/bin/biopy_lib/db/"
+
 #-------------------------------------------------------------------------------
 def get_GIs(blast_out):
     """
@@ -49,7 +51,7 @@ def get_taxID(id_dict):
     import progressbar
 
     # Prepare progress bar
-    num_lines = sum(1 for line in open('db/gi_taxid_prot.dmp', "r"))
+    num_lines = sum(1 for line in open( DB_PATH + 'gi_taxid_prot.dmp', "r"))
     bar = progressbar.ProgressBar(maxval=num_lines,
                                   widgets=[progressbar.Bar('=', '[', ']'),
                                 ' ', progressbar.Percentage()]) 
@@ -59,7 +61,7 @@ def get_taxID(id_dict):
     taxid_dict = {}
     found = 0
     
-    with open('db/gi_taxid_prot.dmp', 'r') as ftax:
+    with open( DB_PATH + 'gi_taxid_prot.dmp', 'r') as ftax:
         print "Retreiving TaxIDs for each GI:"
 
         for i, line in enumerate(ftax):
@@ -109,7 +111,7 @@ def get_tax_local(taxid_dict, ranks):
     """    
     from cogent.parse.ncbi_taxonomy import NcbiTaxonomyFromFiles
 
-    tree = NcbiTaxonomyFromFiles(open('db/nodes.dmp'), open('db/names.dmp'))
+    tree = NcbiTaxonomyFromFiles(open( DB_PATH + 'nodes.dmp'), open( DB_PATH + 'names.dmp'))
     root = tree.Root
 
     def get_lineage(node, my_ranks):
