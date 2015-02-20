@@ -67,7 +67,7 @@ def print_annotated_clusters(annot_d, clus_d):
     for clus in clus_d:
         # Get all annots for each sequences in the cluster
         try:
-            annots = set([ ",".join(annot_d[seqid]) for seqid in clus_d[clus] ])
+            annots = set([ "\t".join(annot_d[seqid]) for seqid in clus_d[clus] ])
             print clus + "\t" + " ".join(annots)
         except KeyError:
             print clus + "\t" + "NA"
