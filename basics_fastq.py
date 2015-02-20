@@ -1,3 +1,7 @@
+import logging as log
+import numpy
+import basics_nuc_seq as bns
+
 #-------------------------------------------------------------------------------
 def get_casava_vers(fastq):
     """
@@ -10,12 +14,14 @@ def get_casava_vers(fastq):
         
         if line1.endswith("/1") or line1.endswith("/2"):
             return "<1.8"
+
         else:
             line1 = line1.split()[1]
             if line1.startswith("1") or line1.startswith("2"):
                 return ">1.8"
+                
             else:
-                raise IOError("Your fastq seems neither casava1.8 or older")
+                return "UNKNOWN"
 
 #-------------------------------------------------------------------------------
 def get_reads(fastq):
@@ -37,7 +43,38 @@ def get_reads(fastq):
         except StopIteration:
             raise IOError(
                 "Can not read the fastq file: {}\nIs it a properly formatted fastq ?".format(fastq))
-                
+
+#-------------------------------------------------------------------------------
+def fastq_stats(fastq):
+    """
+    Return stats about the fastq file
+    """
+    log.info("Loading data from: %s" % fastq)
+
+    rds = get_reads(fastq)
+
+    rds_len = []
+    GC_content = []
+    N_count = 0
+    
+    for seq_id, seq, qual in rds:
+
+        rds_len.append( len(seq) )
+        GC_content.append( bns.get_seq_GC(seq) )
+        N_count += seq.count("N")
+
+    log.info("Computing statistics ...")
+
+    print "Reads statistics:"
+    print "Total #reads: {}M".format( len(rds_len) /1.0e6 )
+    print "Total #bases: {}G".format( sum(rds_len) / 1.0e9 )
+    print "Total #Ns: {}".format( N_count )
+    print "Min length: {}".format( min(rds_len) )
+    print "Max length: {}".format( max(rds_len) )
+    print "Mean length: {}".format( numpy.mean(rds_len) )
+    print "Standard deviation: {}".format( numpy.std(rds_len) )
+    print "Mean GC content: {}".format( numpy.mean(GC_content) )
+    
 #-------------------------------------------------------------------------------
 def filter_qual(fastq, fastq_out):
     """

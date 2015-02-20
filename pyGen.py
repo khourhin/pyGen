@@ -5,6 +5,7 @@ import basics_fastq as bfq
 import blasting as blst
 import common
 import argparse
+import logging as log
 
 ################################################################################
 # A LIBRARY FOR GENETIC AND NGS DATA ANALYSIS
@@ -54,7 +55,8 @@ def file_stats(infile):
     elif fc.isFastQ(infile):
         print infile + " looks like a fastQ file"
         print "Casava version: " + bfq.get_casava_vers(infile)
-        bfq.check_ID_first_field(infile)
+        bfq.fastq_stats(infile)
+#        bfq.check_ID_first_field(infile)
 #        fastq_stats(infile)
     else:
         raise IOError("Formats others than Fasta or FastQ are not yet supported")
@@ -75,9 +77,16 @@ if __name__ == "__main__":
     parser.add_argument("-bN","--blastNdb", help="A fasta file to blast against")
     parser.add_argument("-S","--stats", action="store_true", help="Get stats")
     parser.add_argument("-Z","--tempScript", action="store_true", help="Tmp stuff")
+    parser.add_argument("-v","--verbose", action="store_true", help="More logging info displayed")
     args = parser.parse_args()
 
     if args.infile:
+        if args.verbose:
+            log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
+            log.info("Verbose is ON")
+        else:
+            log.basicConfig(format="%(levelname)s: %(message)s")
+        
         if args.stats:
             file_stats(args.infile)
 
