@@ -1,4 +1,4 @@
-#! /bin/env python
+#! /usr/bin/env python
 
 # this is not properly working yet >>> make a check with other program
 # Based on manhattan.py by Brent Pedersen
