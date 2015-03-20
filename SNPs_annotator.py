@@ -5,6 +5,9 @@
 # for Go domains for eaxmple
 
 # RIGHT NOW ONLY GENES ARE PUT IN THE DB !
+import sqlite3 as lite
+import logging as log
+import os
 
 #-------------------------------------------------------------------------------
 def create_gtf_db(gtf):
@@ -12,9 +15,12 @@ def create_gtf_db(gtf):
     Create a database from a gtf file
     VERIFY IF COLUMNS ARE CORRECT FOR OTHER GTF/GFF FILES
     """
-    import sqlite3 as lite
 
-    con = lite.connect('mygtf.db')
+    outdb=os.path.basename(gtf)
+    outdb=os.path.splitext(outdb)[0]
+
+    log.info("Creating db: " + outdb + ".db")
+    con = lite.connect(outdb + ".db")
     cur = con.cursor()
 
     cur.execute("""CREATE TABLE GTF(chromo TEXT, source TEXT, feature TEXT,
@@ -125,6 +131,8 @@ def fetch_snps_location(db, snps_zip, go_dict):
 
 if __name__ == "__main__":
     import argparse
+
+    log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
 
     parser = argparse.ArgumentParser(description="Work on gtf files")
     parser.add_argument("-g","--gtf_file",
