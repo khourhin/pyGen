@@ -5,6 +5,7 @@
 # for Go domains for eaxmple
 
 # RIGHT NOW ONLY GENES ARE PUT IN THE DB !
+import argparse
 import sqlite3 as lite
 import logging as log
 import os
@@ -27,10 +28,11 @@ def create_gtf_db(gtf):
                 start INT, end INT, score TEXT, strand TEXT,
                 frame TEXT, attributes TEXT)""")
 
-    # 4: to skip the header (should be 4 lines)
+    # Skip the header (starts with #) and have only "gene entries
     data = [row.split('\t')
             for row in file(gtf, 'r').readlines()[4:]
-            if row.split('\t')[2] == "gene" ] # To have only "gene" entries
+            if row.split('\t')[2] == "gene"
+            and not row.startswith("#") ] 
 
     cur.executemany("""INSERT INTO GTF (chromo,source,feature,start,end,score,
                     strand,frame,attributes) VALUES (?,?,?,?,?,?,?,?,?);"""
@@ -130,7 +132,6 @@ def fetch_snps_location(db, snps_zip, go_dict):
 #-------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    import argparse
 
     log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
 
