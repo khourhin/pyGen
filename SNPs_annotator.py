@@ -11,6 +11,21 @@ import logging as log
 import os
 
 #-------------------------------------------------------------------------------
+def parseGtfAttributes(attrs_str):
+
+    # Parsing the attributes of the gtf
+    attrs_str = attrs_str.replace('"','').strip()
+    # Have to remove trailing ";", or final extra empty list in attrs
+    attrs = attrs_str.strip(";").split(";")
+    attrs = [ i.strip().split(" ") for i in attrs  ]
+    attrs_d = { k:v for k, v in attrs }
+
+    if "gene_name" not in attrs_d:
+        attrs_d["gene_name"] = "NO_NAME"
+
+    return attrs_d
+
+#-------------------------------------------------------------------------------
 def create_gtf_db(gtf):
     """
     Create a database from a gtf file
@@ -26,18 +41,33 @@ def create_gtf_db(gtf):
 
     cur.execute("""CREATE TABLE GTF(chromo TEXT, source TEXT, feature TEXT,
                 start INT, end INT, score TEXT, strand TEXT,
-                frame TEXT, attributes TEXT)""")
+                frame TEXT, gene_id TEXT, gene_name TEXT)""")
 
     # Skip the header (starts with #) and have only "gene entries
-    data = [row.split('\t')
-            for row in file(gtf, 'r').readlines()[4:]
-            if row.split('\t')[2] == "gene"
-            and not row.startswith("#") ] 
+    with open(gtf, "r") as gtf:
 
-    cur.executemany("""INSERT INTO GTF (chromo,source,feature,start,end,score,
-                    strand,frame,attributes) VALUES (?,?,?,?,?,?,?,?,?);"""
-                    , data)
+        avail_att_s = set()
+        for line in gtf:
+            if line.startswith("#"): continue
 
+            entry = line.split('\t')
+            if entry[2] == "gene":
+
+                # Get the parsed attributes
+                attrs_d = parseGtfAttributes(entry[8])
+
+                # To have a list of any attributes names present
+                avail_att_s = avail_att_s | set(attrs_d.keys())
+
+                # Adding to already parsed entry (without the full
+                # attribute list i.e [:-1]
+                entry = entry[:-1] + [attrs_d["gene_id"]] + [attrs_d["gene_name"]]
+                cur.execute("""INSERT INTO GTF (chromo,source,feature,start,end,score,
+                    strand,frame,gene_id,gene_name) VALUES (?,?,?,?,?,?,?,?,?,?);"""
+                            , entry)
+
+    log.info("Attributes present in the GTF: " + ", ".join(avail_att_s) )
+    log.warning("Currently, this function only add gene_id and gene_name (more attributes available)")
     con.commit()
     con.close()
 
