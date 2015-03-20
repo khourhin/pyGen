@@ -1,0 +1,82 @@
+* CANDIDATE GENES
+** PREP
+- Get list of fasta files (clustered is better if from transcriptomes)
+one for each sample you want to compare.
+- Get the corresponding annotations (from B2GO, has to be the .annot
+  file) 
+- Edit get_candidates_genes.py and specify the list of fastas and
+  annots AND the OUTFOLDER
+
+** PIPE
+#+BEGIN_SRC bash
+./get_candidate_genes.py
+cd $MY_OUTFOLDER
+for i in `ls`; do muscle -in $i -out ${i}_mus.fas; done
+mkdir R
+#+END_SRC
+Start a R session from the R dir just created.
+In R seq.ana() # The function in candidate_genes_summary.R
+
+* MAKE RECIPROQUAL BLAST FOR HOMOLOGS SEARCH
+** PREP
+- Create a output dir where the blast results and the fastas will be created 
+- EDIT the reciblast.py accordingly
+
+** PIPE
+#+BEGIN_SRC 
+./reciblast.py data/*.fas
+cd fastas # or whatever fasta outfolder specified 
+for i in `ls`; do muscle -in $i -out ${i}_mus.fas; done
+mkdir R
+#+END_SRC
+Start a R session from the R dir just created.
+In R seq.ana() # The function in candidate_genes_summary.R
+
+* GET SNPS LOCATIONS AND ANNOTATIONS
+** IDEA
+To be able to localize a subset of SNPs in the reference genome, get
+the corresponding genes and their GO terms
+
+** PREPROCESSING
+*** Getting SNPs
+- For the first dataset, SNPs were called with samtools with filters (TO CHECK)
+- Then FSTs for populations comparison were computed using vcftools
+- A subset of those SNPs (the ones having a FST value of 1, ie fully fixed)
+was extracted with
+#+BEGIN_SRC 
+awk '$3 = 1 {print}' Backs_fst.weir.fst > tmp1
+#+END_SRC
+
+*** Getting the GO annotations from Ensembl
+- Go to Ensembl
+- Go to Biomart (top left)
+- Select Ensembl genes 75 and the correpsonding genome
+- Click "attributes"
+- In "external", select what you want (the first dataset was with GO name and GO EC)
+
+** NEEDS
+- gtf file (Ensembl)
+- csv files with go annotations (Biomart ENsembl)
+- SNPs positions tab delimited file ((col1 chromo, col2 position)
+
+** PIPE
+Create a db from the gtf file
+#+BEGIN_SRC 
+./SNPs_annotator.py -g demo_data/annotator/z_finch.gtf
+mv mygtf.db demo_data/annotator/.
+#+END_SRC
+
+Locate/annotate SNPs
+#+BEGIN_SRC 
+./SNPS_annotator.py /
+	       -d demo_data/annotator/mygtf.db /
+	       -s demo_data/annotator/fixed_SNPs /
+	       -t demo_data/annotator/z_finch_gos.txt
+#+END_SRC
+
+For double checking
+#+BEGIN_SRC 
+awk '($1 == 1) && ($4 < 125233) && ($5 > 125233) {print}' z_finch.gtf
+#+END_SRC
+
+
