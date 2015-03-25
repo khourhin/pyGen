@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 # THIS SHOULD BE IMPROVED:
 # THE GO information is now really incomplete (only GO terms with no respect
