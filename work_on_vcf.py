@@ -54,9 +54,9 @@ def get_all_SNPs(vcf, GQ_thres):
     with open(vcf, "r") as f:
         for line in f:
 
-            # Get he sample names
+            # Get the sample names
             if line.strip().startswith("#CHROM"):
-                header = ["CHROM", "POS", "REF", "ALT"]
+                header = ["CHROM", "POS", "GENEID", "GENE_NAME", "REF", "ALT"]
                 header += line.strip().split()[9:]
                 print "\t".join(header)
             # Skip comments
@@ -78,9 +78,9 @@ def getGeneId(snp, gtf_db):
         WHERE chromo=? AND start < ? AND end > ?""",(chro, pos, pos))
         data = cur.fetchone()
         if data:
-            return str(data[0]), str(data[1]), str(data[2]), str(data[3])
+            return str(data[2]), str(data[3])
         else:
-            return "NA", "NA", "NA", "NA"
+            return "NA", "NA"
     
 #-------------------------------------------------------------------------------
 def print_genotypes(vcf, GQ_thres, gtf_db=None):
@@ -88,7 +88,8 @@ def print_genotypes(vcf, GQ_thres, gtf_db=None):
 
         if gtf_db:
             gAnnot = getGeneId(snp, gtf_db)
-            snp = gAnnot + snp
+            snp = snp[:2] + gAnnot + snp[2:]
+
 
         print "\t".join( snp )
 
