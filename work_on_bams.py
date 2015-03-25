@@ -2,6 +2,7 @@
 
 import subprocess
 import logging as log
+import sys
 
 #-------------------------------------------------------------------------------
 def getLocus(bam, chromo, start, end):
@@ -13,7 +14,11 @@ def getLocus(bam, chromo, start, end):
     proc = subprocess.Popen(command)
     proc.communicate()
 
-    
+
+#-------------------------------------------------------------------------------
+if __name__ == "__main__":
+
+getLocus(sys.argv[1],1,1,100)
     
     
     
