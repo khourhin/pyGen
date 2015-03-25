@@ -16,9 +16,21 @@ def getLocus(bam, chromo, start, end):
 
 
 #-------------------------------------------------------------------------------
+def getCoverage(bam):
+    """
+    Get coverage for each genes using bedtools
+    """
+    log.info("Getting coverage for: %s" % bam)
+
+    command = [ "bedtools", "genomecov", "-ibam", bam ]
+    proc = subprocess.Popen(command)
+    proc.communicate()
+    print "ah"
+    
+
+#-------------------------------------------------------------------------------
 if __name__ == "__main__":
 
-getLocus(sys.argv[1],1,1,100)
-    
-    
+    #getLocus(sys.argv[1],1,1,100)
+    getCoverage(sys.argv[1])
     
