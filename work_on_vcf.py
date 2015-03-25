@@ -74,12 +74,11 @@ def getGeneId(snp, gtf_db):
 
     with lite.connect(gtf_db) as con:
         con.text_factory = str # to not have unicode formatting
-        cur = con.execute("""SELECT chromo, start, end, attributes from GTF
+        cur = con.execute("""SELECT chromo, start, end, gene_id, gene_name from GTF
         WHERE chromo=? AND start < ? AND end > ?""",(chro, pos, pos))
         data = cur.fetchone()
         if data:
-            gene_id = data[3].split('"')[1]
-            return str(data[0]), str(data[1]), str(data[2]), gene_id
+            return str(data[0]), str(data[1]), str(data[2]), str(data[3])
         else:
             return "NA", "NA", "NA", "NA"
     
@@ -102,7 +101,7 @@ if __name__ == "__main__":
     # This is quite slow (TODO make better use of the database)
 
     parser = argparse.ArgumentParser(description="Get genotypes from a VCF")
-    parser.add_argument("VCF", help="A gtf file out of cufflinks to create a db")
+    parser.add_argument("VCF", help="A vcf file out of GATK for ex")
     parser.add_argument("-t", "--GQ_thres", type=int,
                         help="A threshold for Genotype quality to be kept e.g. 20")
     parser.add_argument("-d", "--gtf_db",
