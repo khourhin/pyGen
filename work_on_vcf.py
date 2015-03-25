@@ -2,8 +2,6 @@
 
 # LOOKS LIKE WORKING, TO DOUBLE CHECK
 # THIS WOULD NOT WORK WITH INDELS >>> TO FILTER INDELS FIRST
-import sys
-import itertools
 import sqlite3 as lite
 import argparse
 
