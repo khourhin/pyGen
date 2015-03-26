@@ -3,7 +3,8 @@
 # LOOKS LIKE WORKING, TO DOUBLE CHECK
 # THIS WOULD NOT WORK WITH INDELS >>> TO FILTER INDELS FIRST
 import sqlite3 as lite
-import argparse
+import logging as log
+import os
 
 #-------------------------------------------------------------------------------
 def get_genotype(all_b, geno_field, GQi, GQ_thres):
@@ -47,7 +48,7 @@ def get_SNP(line, GQ_thres):
     return (chro, pos, ref, all_b, "\t".join(genotypes))
 
 #-------------------------------------------------------------------------------
-def get_all_SNPs(vcf, GQ_thres):
+def get_all_SNPs(vcf, GQ_thres, outfile):
     """
     Create a iterator over all SNPs from a vcf file
     """
@@ -58,7 +59,8 @@ def get_all_SNPs(vcf, GQ_thres):
             if line.strip().startswith("#CHROM"):
                 header = ["CHROM", "POS", "GENEID", "GENE_NAME", "REF", "ALT"]
                 header += line.strip().split()[9:]
-                print "\t".join(header)
+                with open(outfile, "w") as fout:
+                    fout.write("\t".join(header) + "\n")
             # Skip comments
             if not line.strip().startswith("#"):
                 yield get_SNP(line, GQ_thres)
@@ -78,42 +80,26 @@ def getGeneId(snp, gtf_db):
         WHERE chromo=? AND start < ? AND end > ?""",(chro, pos, pos))
         data = cur.fetchone()
         if data:
-            return str(data[2]), str(data[3])
+            chromo, start, end, gene_id, gene_name = data
+            return gene_id, gene_name
         else:
             return "NA", "NA"
     
 #-------------------------------------------------------------------------------
-def print_genotypes(vcf, GQ_thres, gtf_db=None):
-    for snp in get_all_SNPs(vcf, GQ_thres):
+def print_genotypes(vcf, GQ_thres, out_prefix, gtf_db=None):
 
-        if gtf_db:
-            gAnnot = getGeneId(snp, gtf_db)
-            snp = snp[:2] + gAnnot + snp[2:]
+    outfile = out_prefix + "_genotypes.csv"
 
+    if os.path.isfile(outfile): 
+        raise IOError("The outfile '%s' already exists and will not be overwritten" % outfile)
 
-        print "\t".join( snp )
+    log.info("CREATING genotype file: %s" % outfile)
 
-# MAIN
-#-------------------------------------------------------------------------------
+    with open(outfile, "a") as fout:
+        for snp in get_all_SNPs(vcf, GQ_thres, outfile):
 
-if __name__ == "__main__":
+            if gtf_db:
+                gAnnot = getGeneId(snp, gtf_db)
+                snp = snp[:2] + gAnnot + snp[2:]
 
-    # Not working yet with gq = 0 (tiny error)
-    # This is quite slow (TODO make better use of the database)
-
-    parser = argparse.ArgumentParser(description="Get genotypes from a VCF")
-    parser.add_argument("VCF", help="A vcf file out of GATK for ex")
-    parser.add_argument("-t", "--GQ_thres", type=int,
-                        help="A threshold for Genotype quality to be kept e.g. 20")
-    parser.add_argument("-d", "--gtf_db",
-                        help="The path the a gtf db built by SNPs_annotator.py")
-    args = parser.parse_args()
-
-
-    if args.VCF and args.GQ_thres:
-        if args.gtf_db:
-            print_genotypes(args.VCF, args.GQ_thres, args.gtf_db)
-        else:
-            print_genotypes(args.VCF, args.GQ_thres)
-    else:
-        raise IOError("Input should have VCF file and GQ threshold")
+            fout.write("\t".join( snp ) + "\n")

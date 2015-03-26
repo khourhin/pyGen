@@ -7,6 +7,7 @@
 # RIGHT NOW ONLY GENES ARE PUT IN THE DB !
 import sqlite3 as lite
 import logging as log
+import work_on_vcf as wvcf
 import os
 
 #-------------------------------------------------------------------------------
@@ -36,7 +37,7 @@ def create_gtf_db(gtf):
     outdb=os.path.splitext(outdb)[0]
     outdb=outdb + ".db"
 
-    if os.path.exists(outdb):
+    if os.path.isfile(outdb):
         log.warning("The database file %s already exists. Using it for further analysis." % outdb)
         return outdb
 
@@ -123,18 +124,20 @@ def import_go_terms(go_terms_file):
     return go_dict
         
 #-------------------------------------------------------------------------------
-def fetch_snps_location(db, snps_zip, go_dict, outfile):
+def fetch_snps_location(db, snps_zip, go_dict, out_prefix):
     """
     Fetch the annotations information from a list of snps positions
     """
-
+    outfile = out_prefix + "_annot.csv"
     con = lite.connect(db)
     con.text_factory = str # to not have unicode formatting
     
     count = 1
     
-    if os.path.exists(outfile): 
+    if os.path.isfile(outfile): 
         raise IOError("The outfile '%s' already exists and will not be overwritten" % outfile)
+
+    log.info("CREATING snps annotation file: %s" % outfile)
     
     with open(outfile, "w") as fout:
         
@@ -164,11 +167,12 @@ def fetch_snps_location(db, snps_zip, go_dict, outfile):
         con.close()
 
 #-------------------------------------------------------------------------------
-def snpPipe(gtf, vcf, go_terms, snpAnnotOut):
+def snpPipe(gtf, vcf, go_terms, out_prefix, gq_thres):
     """Do the complete pipe for SNPs analysis from a gtf files, a vcf
     files and a csv file from ensembl with GO terms annotations
-    """                 
+    """
     db = create_gtf_db(gtf)
     snps_zip = import_snps_location(vcf)
     go_dict = import_go_terms(go_terms)
-    fetch_snps_location(db, snps_zip, go_dict, snpAnnotOut)
+    fetch_snps_location(db, snps_zip, go_dict, out_prefix)
+    wvcf.print_genotypes(vcf, gq_thres, out_prefix, db)
