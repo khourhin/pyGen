@@ -36,7 +36,10 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
 
         # FIRST: without log2 transformation
         cpms = cpm(y)
-        # Filter in the subset and transpose for aggregate
+        # Checking if ids in the subset file have no cpm (missing count value)
+        miss.id = subset[!subset%in%rownames(cpms)]
+        warning("Missing count data for: ", miss.id , sep=" ")
+        # Filter in the subset and transpose
         cpms = cpms[rownames(cpms)%in%subset,]
         cpms = t(cpms)
 
@@ -50,8 +53,21 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
 #-------------------------------------------------------------------------------
         for (i in 1:ncol(cpms))
             {
-                pdf( paste(c(out.d, colnames(cpms)[i], ".pdf"), collapse=""))
+                                        # For renaming ENSEMBL IDs
+                if (! is.null(annotFile)){
+                    annot = read.table(annotFile, header=T, sep="\t", quote='"', row.names=1, fill=TRUE)
+                    gName=as.character(annot[colnames(cpms)[i],1])
+                    gDescr=as.character(annot[colnames(cpms)[i],2])
+                    gDescr=strsplit(gDescr, "[", fixed=T)[[1]][1]
+                }
 
+                                ## Change file name if gene name is avalaible or not
+                if (gName != ""){                    
+                    pdf( paste(c(out.d, gName, ".pdf"), collapse=""))
+                }   else {
+                    pdf( paste(c(out.d, colnames(cpms)[i], ".pdf"), collapse=""))
+                }
+                # Boxplot
                 boxplot(cpms[,i]~group,
 #                        col = c("grey15","chocolate4","grey","chocolate","white"),
                         col = c("chocolate4","chocolate","grey15","white", "grey", "grey", "grey", "white"),
@@ -60,16 +76,11 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
                         ylab = "CPM",
                         las=3)
                                         # Subtitle with no "0"
-                mtext(gsub("0","",colnames(cpms)[i]))
+                mtext(colnames(cpms)[i])
                 
                                         # For subtitle
-                if (! is.null(annotFile)){
-                    annot = read.table(annotFile, header=T, sep="\t", quote='"', row.names=1, fill=TRUE)
-                    gName=as.character(annot[colnames(cpms)[i],1])
-                    gDescr=as.character(annot[colnames(cpms)[i],2])
-                    gDescr=strsplit(gDescr, "[", fixed=T)[[1]][1]
-                    title(main=paste(gName,gDescr, sep= " "))
-                }
+                title(main=paste(gName,gDescr, sep= " "))
+      
                 dev.off()
             }
 
