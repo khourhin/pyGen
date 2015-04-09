@@ -1,22 +1,19 @@
+#! /usr/bin/Rscript
+# -*- mode: R -*-
+
 expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, annotFile=NULL)
     {
-                                        # countFile: the files with counts in, tab delimited
-                                        # groupsFile: tab delim file with C1: sample name; C2: factor for grouping1;
-                                        # C3: factor for grouping2 etc...
-                                        # groupChoice: the number of the group column to use from groupsFile
-                                        # (ex: 2 for C2, 3 for C3)
-                                        # subsetFile: A file with one Transcript name by line to filter in
-                                        # At least MINIMUM !!! two transcript names should be specified
-                                        # annotFile: with $1: seqid, $2: annotation # this file can be created in
-                                        # ensembl biomart with only transcript id
+        ## Imports
+#-------------------------------------------------------------------------------
+
         library(edgeR)
         library(pheatmap)
 
         counts <- read.delim(countFile, row.names=1, check.names=F)
         group <- factor(read.delim( groupsFile, header=F )[,groupChoice])
-        #annot <- read.table("~/Work/Junco/analysis/annotations/transcripts_annot.txt",
-        #                    header=T, sep="\t", quote='"', row.names=1, fill=TRUE)
 
+        ## Check if subsetting:
+#-------------------------------------------------------------------------------
         if (! is.null(subsetFile)){
             if (file.exists(subsetFile[1])){
                 message("Using file for subsetting")
@@ -32,11 +29,10 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
         message(c("Using theses groups: ", paste(levels(group), collapse=" ")))
         message(c("Seems to have ", length(group), " libraries in the analysis."))
         
-
+        ## Normalizing counts
+#-------------------------------------------------------------------------------
         y <- DGEList(counts=counts, group=group )
         y <- calcNormFactors(y)
-#        print(y)
-
 
         # FIRST: without log2 transformation
         cpms = cpm(y)
@@ -44,17 +40,14 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
         cpms = cpms[rownames(cpms)%in%subset,]
         cpms = t(cpms)
 
-        # Before for the bar plot by means
-        #cpms = aggregate(cpms, by=list(group), mean)
-        # Aggreagte add a fisrt columns with the groups names > let's remove it
-        #rownames(cpms) = cpms[,1]
-        #cpms = cpms[,-1]
-
         out.d="hist_heat_out/"
         dir.create(out.d)
         
         par(mfrow=c(2,3))
         head(cpms)
+
+        ## BoxPlotting each gene/transcript
+#-------------------------------------------------------------------------------
         for (i in 1:ncol(cpms))
             {
                 pdf( paste(c(out.d, colnames(cpms)[i], ".pdf"), collapse=""))
@@ -68,15 +61,6 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
                         las=3)
                                         # Subtitle with no "0"
                 mtext(gsub("0","",colnames(cpms)[i]))
-
-                
-                # old barplot
-                #barplot(cpms[,i],
-                 #       main =  colnames(cpms)[i],
-                  #      col = c("black","chocolate4","grey","chocolate","white"), 
-                   #     names.arg = rownames(cpms),
-                    #    xlab = "Tissues",
-                     #   ylab = "Mean cpms")
                 
                                         # For subtitle
                 if (! is.null(annotFile)){
@@ -89,6 +73,8 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
                 dev.off()
             }
 
+        ## Log2 transformation for heat map
+#-------------------------------------------------------------------------------
         # SECOND: with log2 transformation
         # From edgeR manual (to calculate logCPM)
         cpms = cpm(y, prior.count=2, log=T)
@@ -110,6 +96,8 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
             colnames(cpms) = gName
         }
         
+        ## HeatMapping
+#-------------------------------------------------------------------------------
         for (i in 1:ncol(cpms)) { cpms[,i] = cpms[,i] / median(cpms[,i]) }
 
                                         # New window
@@ -120,3 +108,25 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
 #        return(cpms)
     }
 
+#-------------------------------------------------------------------------------
+                                        # MAIN
+#-------------------------------------------------------------------------------
+        # USAGE
+        # $1, countFile: the files with counts in, tab delimited
+        # $2, groupsFile: tab delim file with C1: sample name; C2: factor for grouping1;
+        # C3: factor for grouping2 etc...
+
+        # $3, groupChoice: the number of the group column to use from groupsFile
+        # (ex: 2 for C2, 3 for C3)
+
+        # $4, subsetFile: A file with one Transcript name by line to filter in
+        # At least MINIMUM !!! two transcript names should be specified
+
+        # $5, annotFile: with C1: seqid, C2: annotation # this file can be created in
+        # ensembl biomart with only transcript id
+
+        # Example: 
+
+args = commandArgs(trailingOnly = TRUE)
+expr.plots(args[1], args[2], as.numeric(args[3]), args[4], args[5])
+#print(args[3])
