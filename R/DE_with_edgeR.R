@@ -1,4 +1,6 @@
-#-------------------------------------------------------------------------------
+#! /usr/bin/Rscript
+
+##-------------------------------------------------------------------------------
 exact.test.fun <- function(y, i, j){
                                         # Perform DE exact test    
             y <- calcNormFactors(y)
@@ -11,7 +13,7 @@ exact.test.fun <- function(y, i, j){
             return(et)
 }
 
-#-------------------------------------------------------------------------------
+##-------------------------------------------------------------------------------
 glm.test.fun <- function(y, i, j, group){
 
     design = model.matrix(~0+group, data=y$samples)
@@ -30,7 +32,7 @@ glm.test.fun <- function(y, i, j, group){
     return(lrt)
 }
 
-#-------------------------------------------------------------------------------
+##-------------------------------------------------------------------------------
 all.groups.test.fun <- function(counts, group, test){
                                         # Launch tests for each group comparison
     gpl = levels(group)
@@ -77,24 +79,7 @@ all.groups.test.fun <- function(counts, group, test){
     return(all.deg)
 }
 
-#-------------------------------------------------------------------------------
-# MAIN
-#-------------------------------------------------------------------------------
 DE.fun <- function(countFile,groupsFile, groupChoice, test="exact", outFile, logFCthres=0, annotFile=NULL){
-                                        # Differential expression calculation with edgeR
-                                        # countFile: the files with counts in, tab delimited
-                                        # groupsFile: tab delim file with C1: sample name; C2: factor for grouping1;
-                                        # C3: factor for grouping2 etc...
-                                        # groupChoice: the number of the group column to use from groupsFile
-                                        # (ex: 2 for C2, 3 for C3)
-                                        # Test= exact or glm
-                                        # outFile: the outfile with the DEG
-                                        # logFCthres: optional a logFC value for cutof (for ex: 2)
-                                        # This option is only used for the last summary table
-                                        # annotFile a file with the annotations (tab delim):
-                                        # $1: seq (or clus) id
-                                        # $2: annots
-
     
     library(edgeR)
     
@@ -130,3 +115,29 @@ DE.fun <- function(countFile,groupsFile, groupChoice, test="exact", outFile, log
     return(sum.table)
 #    return(all.deg)    
 }
+
+##-------------------------------------------------------------------------------
+                                        # MAIN
+##-------------------------------------------------------------------------------
+                                        # USAGE
+
+## Differential expression calculation with edgeR
+
+## $1, countFile: the files with counts in, tab delimited
+## $2, groupsFile: tab delim file with C1: sample name; C2: factor for grouping1;
+## C3: factor for grouping2 etc...
+## $3, groupChoice: the number of the group column to use from groupsFile
+## (ex: 2 for C2, 3 for C3)
+## $4, Test= exact or glm
+## $5, outFile: the outfile with the DEG
+## $6, logFCthres: optional a logFC value for cutof (for ex: 2)
+## This option is only used for the last summary table
+## $7, annotFile a file with the annotations (tab delim):
+## C1: seq (or clus) id
+## C2: annots
+                                        # EXAMPLE
+## In 
+DE_with_edgeR.R all_counts_junco junco_sample_grps.tab 4 exact myout1 2 transcripts_ensembl.tab
+                                        # JOB
+args = commandArgs(trailingOnly = TRUE)
+DE.fun(args[1], args[2], as.numeric(args[3]), args[4], args[5], as.numeric(args[6]), args[7])
