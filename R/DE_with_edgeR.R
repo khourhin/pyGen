@@ -75,7 +75,7 @@ all.groups.test.fun <- function(counts, group, test){
         }
     }
                                         # Add the seqid name to column for reshaping
-    colnames(all.deg)[2]="seq_id"
+    colnames(all.deg)[2] = "seq_id"
     return(all.deg)
 }
 
@@ -137,7 +137,7 @@ DE.fun <- function(countFile,groupsFile, groupChoice, test="exact", outFile, log
 ## C2: annots
                                         # EXAMPLE
 ## In 
-DE_with_edgeR.R all_counts_junco junco_sample_grps.tab 4 exact myout1 2 transcripts_ensembl.tab
+#DE_with_edgeR.R all_counts_junco junco_sample_grps.tab 4 exact myout1 2 transcripts_ensembl.tab
                                         # JOB
 args = commandArgs(trailingOnly = TRUE)
 DE.fun(args[1], args[2], as.numeric(args[3]), args[4], args[5], as.numeric(args[6]), args[7])
