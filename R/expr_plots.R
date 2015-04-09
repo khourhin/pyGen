@@ -111,22 +111,27 @@ expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, anno
 #-------------------------------------------------------------------------------
                                         # MAIN
 #-------------------------------------------------------------------------------
-        # USAGE
-        # $1, countFile: the files with counts in, tab delimited
-        # $2, groupsFile: tab delim file with C1: sample name; C2: factor for grouping1;
-        # C3: factor for grouping2 etc...
 
-        # $3, groupChoice: the number of the group column to use from groupsFile
-        # (ex: 2 for C2, 3 for C3)
+                                        # USAGE
 
-        # $4, subsetFile: A file with one Transcript name by line to filter in
-        # At least MINIMUM !!! two transcript names should be specified
+### $1, countFile: the files with counts in, tab delimited
+### $2, groupsFile: tab delim file with C1: sample name; C2: factor for grouping1;
+### C3: factor for grouping2 etc...
 
-        # $5, annotFile: with C1: seqid, C2: annotation # this file can be created in
-        # ensembl biomart with only transcript id
+### $3, groupChoice: the number of the group column to use from groupsFile
+### (ex: 2 for C2, 3 for C3)
 
-        # Example: 
+### $4, subsetFile: A file with one Transcript name by line to filter in
+### At least MINIMUM !!! two transcript names should be specified
 
+### $5, annotFile: with C1: seqid, C2: annotation # this file can be created in
+### ensembl biomart with only transcript id
+
+                                        # Example:
+
+# In /home/tiennou/bin/pyGen/demo_data/Zfinch
+# expr_plots.R all_counts_junco junco_sample_grps.tab 3 transcript_subset.txt transcripts_ensembl.tab
+
+                                        # main:
 args = commandArgs(trailingOnly = TRUE)
 expr.plots(args[1], args[2], as.numeric(args[3]), args[4], args[5])
-#print(args[3])
