@@ -37,7 +37,7 @@ all.groups.test.fun <- function(counts, group, test){
                                         # Launch tests for each group comparison
     gpl = levels(group)
     all.deg = data.frame()
-
+            
     for (i in gpl){
         gpl = gpl[-1]
 
@@ -82,6 +82,7 @@ all.groups.test.fun <- function(counts, group, test){
 DE.fun <- function(countFile,groupsFile, groupChoice, test="exact", outFile, logFCthres=0, annotFile=NULL){
     
     library(edgeR)
+    library(reshape)
     
     counts <- read.delim(countFile, row.names=1, check.names=F)
     group <- factor(read.delim( groupsFile, header=F )[,groupChoice])
@@ -96,7 +97,8 @@ DE.fun <- function(countFile,groupsFile, groupChoice, test="exact", outFile, log
                                         # Cutof logFC theshold
     sum.table <- all.deg[abs(all.deg[,"logFC"]) >= logFCthres, ]
                                         # Reshape, keeping comp, seqId and FC
-    sum.table <- reshape(sum.table[,1:3], idvar="seq_id", timevar="comp", direction="wide")
+    tmp1 <- melt(sum.table[,1:3], c("seq_id","comp"))
+    sum.table <- cast(tmp1,  seq_id ~ comp ) 
 
     if (! is.null(annotFile)){
         annots <-  read.csv(annotFile, row.names=1, header=T, sep="\t")
@@ -121,10 +123,14 @@ DE.fun <- function(countFile,groupsFile, groupChoice, test="exact", outFile, log
 ##-------------------------------------------------------------------------------
                                         # USAGE
 
+####### WARNING !!!!!!!!!!!
+# reshape is not working properly (missing some comparisons)
+
 ## Differential expression calculation with edgeR
 
 ## $1, countFile: the files with counts in, tab delimited
-## $2, groupsFile: tab delim file with C1: sample name; C2: factor for grouping1;
+## $2, groupsFile: tab delim file with C1: sample name; C2: factor for grouping 
+###### WARN: groups order should correspond to the order of the ids in count file
 ## C3: factor for grouping2 etc...
 ## $3, groupChoice: the number of the group column to use from groupsFile
 ## (ex: 2 for C2, 3 for C3)
