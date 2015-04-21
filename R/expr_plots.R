@@ -1,5 +1,4 @@
 #! /usr/bin/Rscript
-# -*- mode: R -*-
 
 expr.plots <- function(countFile, groupsFile, groupChoice, subsetFile=NULL, annotFile=NULL)
     {
