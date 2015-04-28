@@ -123,20 +123,16 @@ DE.fun <- function(countFile,groupsFile, groupChoice, test="exact", outFile, log
 ##-------------------------------------------------------------------------------
                                         # USAGE
 
-####### WARNING !!!!!!!!!!!
-# reshape is not working properly (missing some comparisons)
-
 ## Differential expression calculation with edgeR
 
 ## $1, countFile: the files with counts in, tab delimited
-## $2, groupsFile: tab delim file with C1: sample name; C2: factor for grouping 
+## $2, groupsFile: tab delim file with C1: sample name; C2...CN: factor for grouping 
 ###### WARN: groups order should correspond to the order of the ids in count file
-## C3: factor for grouping2 etc...
 ## $3, groupChoice: the number of the group column to use from groupsFile
 ## (ex: 2 for C2, 3 for C3)
 ## $4, Test= exact or glm
 ## $5, outFile: the outfile with the DEG
-## $6, logFCthres: optional a logFC value for cutof (for ex: 2)
+## $6, logFCthres: a logFC value for cutof (for ex: 2)
 ## This option is only used for the last summary table
 ## $7, annotFile a file with the annotations (tab delim):
 ## C1: seq (or clus) id
