@@ -9,13 +9,12 @@
 # this will be the last SNP position and not the last position on the complete
 #chromosome
 
-import sys
-sys.path.append("/gpfs/csic_users/milab/bin")
+import basics_fasta as bf
 
+#-------------------------------------------------------------------------------
 def get_chro_len(g_fas):
-    import bio_lib
 
-    seq_d = bio_lib.fasta_2_dict(g_fas)
+    seq_d = bf.fasta_2_dict(g_fas)
     len_d = dict()
 
     for chro in seq_d:
@@ -23,8 +22,8 @@ def get_chro_len(g_fas):
 
     return sum(len_d.values())
 
-
-def _gen_data(out_weir_fst):
+#-------------------------------------------------------------------------------
+def gen_data(out_weir_fst):
 
     with open(out_weir_fst, "r") as f:
         f.next()
@@ -33,6 +32,7 @@ def _gen_data(out_weir_fst):
             if fst != "-nan":
                 yield chro, int(pos), float(fst)
 
+#-------------------------------------------------------------------------------
 def prep_for_plot(data, out_graph):
     # for fixing no display error on server
     import matplotlib as mpl
@@ -79,9 +79,16 @@ def prep_for_plot(data, out_graph):
                rotation=-90, size=7)
     plt.savefig( out_graph + ".png", format="png" )
    
+#-------------------------------------------------------------------------------
+# MAIN
+#-------------------------------------------------------------------------------
+
+#USAGE : 
+# $1: weir fst file
+# $2: name for graph_out
+
 if __name__ == "__main__":
     import sys
     #get_chro_len(sys.argv[2])
-    data = _gen_data(sys.argv[1])
-    #USAGE : $1 > weir fst file, $2 > name for graph_out
+    data = gen_data(sys.argv[1])
     prep_for_plot(data, sys.argv[2])
