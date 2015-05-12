@@ -122,9 +122,32 @@ def import_go_terms(go_terms_file):
                 go_dict[gene] = [GO_id]
 
     return go_dict
-        
+
 #-------------------------------------------------------------------------------
-def fetch_snps_location(db, snps_zip, go_dict, out_prefix):
+def getFsts(fst_f):
+    """
+    From a FST file out of VCFtools ($1: chromo, $2:pos, $3: fsts),
+    return a dictionnary:
+    key: zip(chromo, pos)
+    value: fst
+    """
+    fst_d = {}
+    
+    with open(fst_f) as f:
+        next(f) # pass the header
+
+        for line in f:
+            line = line.strip().split("\t")
+            chro = line[0]
+            pos = line[1]
+            fst = float(line[2])
+            
+            fst_d[(chro, pos)] = fst
+            
+    return fst_d
+
+#-------------------------------------------------------------------------------
+def fetch_snps_location(db, snps_zip, go_dict, out_prefix, fst_f=False):
     """
     Fetch the annotations information from a list of snps positions
     """
@@ -138,10 +161,16 @@ def fetch_snps_location(db, snps_zip, go_dict, out_prefix):
         raise IOError("The outfile '%s' already exists and will not be overwritten" % outfile)
 
     log.info("CREATING snps annotation file: %s" % outfile)
+
+    if fst_f:
+        fst_d = getFsts(fst_f)
     
     with open(outfile, "w") as fout:
-        
-        fout.write("SNP\tCHRO\tPOS\tGID\tGNAME\tG_CHRO(DBUG)\tSTART\tEND\tGOs\n")
+
+        if fst_f:
+            fout.write("SNP\tCHRO\tPOS\tGID\tGNAME\tG_CHRO(DBUG)\tSTART\tEND\tFST\tGOs\n")
+        else:
+            fout.write("SNP\tCHRO\tPOS\tGID\tGNAME\tG_CHRO(DBUG)\tSTART\tEND\tGOs\n")
 
         no_GO = []
         for c, p in snps_zip:
@@ -157,15 +186,21 @@ def fetch_snps_location(db, snps_zip, go_dict, out_prefix):
                 except KeyError:
                     # Nothing done yet with list of SNPs without GOs
                     no_GO.append(count)
-                fout.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (gene_id, gene_name,
-                                                  chromo, start, end, GOs))
+
+                if fst_f:
+                    fst = fst_d[c, p]
+                    fout.write("%s\t%s\t%s\t%s\t%s\t%s\t%s\n" % (gene_id, gene_name,
+                                                                 chromo, start, end, fst, GOs))
+                else:
+                    fout.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (gene_id, gene_name,
+                                                                 chromo, start, end, GOs))                    
             else:
-                fout.write("NA\tNA\tNA\tNA\tNA\tNA\n")
+                fout.write("NA\tNA\tNA\tNA\tNA\tNA\tNA\n")
             
             count += 1
 
         con.close()
-
+        
 #-------------------------------------------------------------------------------
 def snpPipe(gtf, vcf, go_terms, out_prefix, gq_thres):
     """Do the complete pipe for SNPs analysis from a gtf files, a vcf
@@ -176,3 +211,27 @@ def snpPipe(gtf, vcf, go_terms, out_prefix, gq_thres):
     go_dict = import_go_terms(go_terms)
     fetch_snps_location(db, snps_zip, go_dict, out_prefix)
     wvcf.print_genotypes(vcf, gq_thres, out_prefix, db)
+
+#-------------------------------------------------------------------------------
+def snpPipeFsts(gtf, vcf, go_terms, out_prefix, gq_thres, fst_f):
+    """Do the complete pipe for SNPs analysis from a gtf files, a vcf
+    files and a csv file from ensembl with GO terms annotations.
+    In addition add the fsts values
+    """
+    db = create_gtf_db(gtf)
+    snps_zip = import_snps_location(vcf)
+    go_dict = import_go_terms(go_terms)
+    fetch_snps_location(db, snps_zip, go_dict, out_prefix, fst_f)
+    wvcf.print_genotypes(vcf, gq_thres, out_prefix, db)
+
+    
+#-------------------------------------------------------------------------------
+# For TESTING
+if __name__ == "__main__":
+    import sys
+
+    snpPipeFsts("/home/tiennou/bin/pyGen/demo_data/Zfinch/Taeniopygia_guttata.taeGut3.2.4.77.gtf",
+                "/home/tiennou/work/Junco/analysis/final/snps/round2_HQ_SNP.vcf",
+                "/home/tiennou/bin/pyGen/demo_data/Zfinch/zfinch_go_annot.csv",
+                "testsnp",20,"/home/tiennou/work/Junco/analysis/final/snps/fsts/test_ORJU_all_vs_SLJU_all_out.weir.fst")
+#    print getFsts(sys.argv[1])
