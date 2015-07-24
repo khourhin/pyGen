@@ -116,7 +116,6 @@ def filter_qual(fastq, fastq_out):
 
                 fout.write("{0}\n{1}\n{2}\n{3}\n".format(seq_id, seq, "+", qual))
 
-            
 #-------------------------------------------------------------------------------
 def get_fq_ids(fastq):
     """
