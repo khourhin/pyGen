@@ -43,13 +43,20 @@ def fasta_2_dict(fas_file, simple_ID=True):
 
 
 #-------------------------------------------------------------------------------
-def filter_by_id(seq_d, seq_id_lst):
+def filter_by_id(seq_d, seq_id_lst, startonly=False):
     """
     Yield tuples (seq_id, seq) from a LIST of selected ids
     """
-    for seq_id in seq_id_lst:
+    if not startonly:
+        for seq_id in seq_id_lst:
             yield (seq_id, seq_d[seq_id])
 
+    else:
+        for seq_id in seq_id_lst:
+            for dictID in seq_d:
+                if dictID.startswith(seq_id):
+                    yield (dictID, seq_d[dictID])
+        
 #-------------------------------------------------------------------------------
 def filter_by_len(seq_d, len_thres):
     """

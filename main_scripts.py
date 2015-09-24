@@ -10,7 +10,7 @@ def filterFastaByIds(fasta, idsFile):
     with open(idsFile, 'r') as f:
         ids_to_keep = [ seqid.strip() for seqid in f ]
 
-    filt_seqs = bf.filter_by_id(seqs, ids_to_keep)
+    filt_seqs = bf.filter_by_id(seqs, ids_to_keep, False)
 
     bf.write_as_fas(filt_seqs)
 
