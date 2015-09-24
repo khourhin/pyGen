@@ -1,0 +1,14 @@
+# In /home/tiennou/Documents/Taff/post_doc/Junco/analysis/final/R
+* heatmaps:
+a = aggregate(t(cpms.log[subset.pigT.FC2,]), by=list(groups[,5]), mean)
+rownames(a) = a[,1] 
+a = a[,-1]
+names(a) = annot[names(a),1]
+pheatmap(t(a))
+# For median centered
+for (i in 1:ncol(a)) { a[,i] = a[,i] / mean(a[,i]) }
+pheatmap(t(a))
+* GOseq package:
+library(goseq)
+pwf = nullp(genes4GOseq, "taeGut2", "ensGene", bias.data=b)
+

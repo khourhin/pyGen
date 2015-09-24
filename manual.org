@@ -1,0 +1,17 @@
+* SNPs
+** NEEDS
+- vcf file 
+- gtf file (Ensembl)
+- csv files with go annotations (Biomart ENsembl)
+** Using the SNP pipeline:
+- Usage:
+tmp_scripts_using_pyGen.py snps -s file.vcf -a file.gtf - g biomart.csv
+- Example:
+~/bin/pyGen/tmp_scripts_using_pyGen.py snps -s round2_HQ_SNP.vcf -a~/bin/pyGen/demo_data/Zfinch/Taeniopygia_guttata.taeGut3.2.4.77.gtf -g ~/bin/pyGen/demo_data/Zfinch/zfinch_go_annot.csv
+
+* Differential expression
+** Make DE test using DE_with_edgeR.R
+Example:
+#+BEGIN_SRC bash
+DE_with_edgeR.R all_counts_junco junco_sample_grps.tab 4 exact myout1 2 transcripts_ensembl.tab
+#+END_SRC
