@@ -15,32 +15,33 @@ def get_xml_res(blast_xml):
             yield blast_record
 
 #-------------------------------------------------------------------------------
-def filter_res(blast_xml, evalue):
-    """
-    Filter blast record
-    """
-    pass
-
-#-------------------------------------------------------------------------------
-def get_best_records(blast_xml):
+def get_records(blast_xml, onlyBest=False):
     """
     From https://sites.google.com/site/xzhou82/Home/computer/python/biopython
     """
-    
     for record in get_xml_res(blast_xml):
 
         for align in record.alignments:
-            hsp = align.hsps[0]
-            # Remove spaces from the query ID
+
             queryID = record.query.split()[0]
-            dbID = align.accession + align.title
-            id_percent = float(hsp.identities) / hsp.align_length *100
-            yield (queryID, dbID, id_percent, hsp.align_length, hsp.expect, hsp.score)
-            break
-    
+            dbID = align.hit_def.replace(" ", "_")
+            #old version (don't know exactly what align.accession is refering to)
+            #dbID = align.accession + align.title
+            
+            if onlyBest:
+                hsp = align.hsps[0]
+                yield (queryID, dbID, hsp)
+                
+            else:
+                for hsp in align.hsps:
+                    yield (queryID, dbID, hsp)
+
 #-------------------------------------------------------------------------------
-def print_blast_records(blast_xml):
+def print_recs(hsp_i):
     """
+    from a tuple hsp iterator of the form:
+    (queryID, dbID, <hsp object>) # like in get_best_records
+
     Print a blast records in tab delimited format with fields as:
 
     ====== ========= ============================================
@@ -60,36 +61,36 @@ def print_blast_records(blast_xml):
         12 bitscore  Bit score
     ====== ========= ============================================
     """
-    
-    for blast_rec in get_xml_res(blast_xml):
+
+    for hsp in hsp_i:
+        queryID = hsp[0]
+        dbID = hsp[1]
+        hsp = hsp[2]
         
-        for alignment in blast_rec.alignments:
-            for hsp in alignment.hsps:
-
-                # cp from blastxml_to_tabular.py (galaxy)
-                mismatch = hsp.match.count(" ") + hsp.match.count("+") \
-                           - hsp.query.count("-") - hsp.sbjct.count("-")
-                gap_open = len(hsp.query.replace('-', ' ').split()) -1  \
-                           + len(hsp.sbjct.replace('-', ' ').split()) -1 
-                
-                values = [ blast_rec.query.replace(" ", "_"),
-                           alignment.title.replace(" ", "_"),
-                           "%.2f"% (float(hsp.identities) / hsp.align_length *100),
-                           mismatch,
-                           gap_open,
-                           hsp.align_length,
-                           hsp.query_start,
-                           hsp.query_end,
-                           hsp.sbjct_start,
-                           hsp.sbjct_end,
-                           hsp.expect,
-                           hsp.score ]
-
-                # Convert all valuess to strings
-                values = [ str(x) for x in values ]
-                
-                print "\t".join(values)
-
+        mismatch = hsp.match.count(" ") + hsp.match.count("+") \
+                   - hsp.query.count("-") - hsp.sbjct.count("-")
+        gap_open = len(hsp.query.replace('-', ' ').split()) -1  \
+                   + len(hsp.sbjct.replace('-', ' ').split()) -1 
+        
+        values = [ queryID,
+                   dbID,
+                   "%.2f"% (float(hsp.identities) / hsp.align_length *100),
+                   mismatch,
+                   gap_open,
+                   hsp.align_length,
+                   hsp.query_start,
+                   hsp.query_end,
+                   hsp.sbjct_start,
+                   hsp.sbjct_end,
+                   hsp.expect,
+                   hsp.score ]
+        
+        # Convert all valuess to strings
+        values = [ str(x) for x in values ]
+        
+        print "\t".join(values)
+        
+    
 #-------------------------------------------------------------------------------
 def print_gff(blast_xml):
     """
@@ -128,27 +129,10 @@ def print_gff(blast_xml):
 
 if __name__ == "__main__":
 
-   import argparse
+    import sys
+    
+    # Get best hits:
+    xml = sys.argv[1]
 
-   parser = argparse.ArgumentParser(description="")
-   parser.add_argument("infile",
-                       help="xml input file")
-#   parser.add_argument("outfile",
-#                       help="output file")
-#   parser.add_argument("-t","--test",
-#                       help="an option",
-#                       action='store_true')
-   
-   args = parser.parse_args()
-
-   # Return result to standart out
-   #print_blast_records(args.infile)
-
-   #Only best records:
-   print 'Query\tHit_description\t%identity\talignment_length\tE-value\tScore'
-   for i in get_best_records(args.infile):
-       print "\t".join([str(x) for x in i])
-
-
-   #Return a gff
-   # print_gff(args.infile)
+    recs = get_records(xml, onlyBest=True)
+    print_recs(recs)
