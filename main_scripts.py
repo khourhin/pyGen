@@ -14,11 +14,16 @@ def filterFastaByIds(fasta, idsFile):
 
     bf.write_as_fas(filt_seqs)
 
+def summarize_fasta(fas):
+    seqs = bf.fasta_2_dict(fas)
+    bf.make_summary(seqs)
+    
+    
 #-------------------------------------------------------------------------------
 if __name__ == '__main__':
 
-    filterFastaByIds(sys.argv[1], sys.argv[2])
-    
+    #filterFastaByIds(sys.argv[1], sys.argv[2])
+    summarize_fasta( sys.argv[1] )
 
 
 
