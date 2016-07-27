@@ -1,0 +1,5 @@
+*.pyc
+/db/
+/demo_data/
+/R/.Rhistory
+/Taeniopygia_guttata.taeGut3.2.4.77.db
