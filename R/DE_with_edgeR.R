@@ -125,7 +125,7 @@ DE.fun <- function(countFile,groupsFile, groupChoice, test="exact", outFile, log
 
 ## Differential expression calculation with edgeR
 
-## $1, countFile: the files with counts in, tab delimited
+## $1, countFile: the file with counts in, tab delimited
 ## $2, groupsFile: tab delim file with C1: sample name; C2...CN: factor for grouping 
 ###### WARN: groups order should correspond to the order of the ids in count file
 ## $3, groupChoice: the number of the group column to use from groupsFile
