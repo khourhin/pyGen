@@ -93,8 +93,6 @@ title(main="B. Normalized data", ylab="Log-cpm")
 #levels(col.groups) <- brewer.pal(nlevels(col.group), "Set1")
 #col.group <- as.character(col.group)
 
-col.group <- group
-levels(col.group) <- c("red", "blue")
 plotMDS(lcpm, labels=group, col=as.numeric(group))
 title(main="A. Sample groups")
 

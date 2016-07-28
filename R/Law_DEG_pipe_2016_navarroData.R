@@ -10,16 +10,17 @@ files <- list.files("~/analysis/navarro/v1/star/counts", full.name=T)
 x <- readDGE(files, columns=c(1,2))
 
 ## Changing for nicer names
-colnames(x) <- substring(colnames(x), 21, nchar(colnames(x)) - 4)
+colnames(x) <- basename(colnames(x))
 samplenames <- colnames(x)
 
 ## 4 control and 4 treated with dioxin
                                         #group <- as.factor(c(rep("DMSO", 4), rep("TCDD", 4)))
 group <- as.factor(c(rep("dela", 3), rep("delb", 3), rep("tg", 2)))
-
 x$samples$group <- group
 
 ## Can add also the lane to see the sequencing effect (see article)
+lane <- as.factor(c("L7", rep("L8", 5), rep("L6", 2)))
+x$samples$lane <- lane
 
 # For easier annotations
 library(Homo.sapiens)
@@ -70,7 +71,7 @@ dim(x)
 
 lcpm <- cpm(x, log=TRUE)
 plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0, 0.60), las=2, main="", xlab="")
-title(main="B. filtered data", xlab="Log-cpm")
+title(main="B. Filtered data", xlab="Log-cpm")
 abline(v=0, lty=3)
 for (i in 2:nsamples){
     den <- density(lcpm[,i])
@@ -81,7 +82,7 @@ legend("topright", samplenames, text.col=col, bty="n")
 ## Trimmed mean of M-values normalization (TMM)
 ## Before
 boxplot(lcpm, las=2, col=col, main="")
-title(main="A. Raw data", ylab="Log-cpm")
+title(main="A. Filtered data", ylab="Log-cpm")
 
 ## After
 x <- calcNormFactors(x, method="TMM")
@@ -97,9 +98,13 @@ title(main="B. Normalized data", ylab="Log-cpm")
 #col.group <- as.character(col.group)
 
 col.group <- group
-levels(col.group) <- c("red", "blue", "green")
 plotMDS(lcpm, labels=group, col=as.numeric(group))
 title(main="A. Sample groups")
+
+col.lane <- lane
+plotMDS(lcpm, labels=lane, col=as.numeric(lane)+3)
+title(main="B. Sample lane")
+
 
 ## In case second grouping (for example by sequencing lanes)
 ##col.lane <- lane
@@ -135,11 +140,13 @@ efit <- eBayes(vfit)
 plotSA(efit)
 
 ## Summarize DEG
+message("Without Log FC threshold:")
 summary(decideTests(efit))
 
-# Adding a Log Fold Change threshold of 1 
+## Adding a Log Fold Change threshold of 1 
 tfit <- treat(vfit, lfc=1)
 dt <- decideTests(tfit)
+message("Without Log FC threshold:")
 summary(dt)
 
 ## Possible to do if more than 2 groups
