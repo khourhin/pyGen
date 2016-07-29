@@ -4,29 +4,31 @@
 library(edgeR)
 pdf()
 
+                                        # TO EDIT
 files <- list.files("~/analysis/navarro/v1/star/counts", full.name=T)
 
+                                        # TO EDIT
 ## Can import the data directly out of star/htseq (columns given are geneid and counts)
-x <- readDGE(files, columns=c(1,2))
+x <- readDGE(files, columns=c(1,3))
+
+                                        # TO EDIT
+## 4 control and 4 treated with dioxin
+group <- as.factor(c(rep("dela", 2), rep("delb", 2), rep("tg", 2)))
+x$samples$group <- group
+                                        # TO EDIT
+## Can add also the lane to see the sequencing effect (see article)
+lane <- as.factor(c(rep("L8", 4), rep("L6", 2)))
+x$samples$lane <- lane
 
 ## Changing for nicer names
 colnames(x) <- basename(colnames(x))
 samplenames <- colnames(x)
 
-## 4 control and 4 treated with dioxin
-                                        #group <- as.factor(c(rep("DMSO", 4), rep("TCDD", 4)))
-group <- as.factor(c(rep("dela", 3), rep("delb", 3), rep("tg", 2)))
-x$samples$group <- group
-
-## Can add also the lane to see the sequencing effect (see article)
-lane <- as.factor(c("L7", rep("L8", 5), rep("L6", 2)))
-x$samples$lane <- lane
-
 # For easier annotations
-library(Homo.sapiens)
 library(Mus.musculus)
 geneid <- rownames(x)
-                                        #genes <- select(Homo.sapiens, keys=geneid, columns=c("SYMBOL", "TXCHROM"), keytype="ENSEMBL")
+
+                                        # TO EDIT
 genes <- select(Mus.musculus, keys=geneid, columns=c("SYMBOL", "TXCHROM"), keytype="ENSEMBL")
 head(genes)
 
@@ -61,8 +63,8 @@ legend("topright", samplenames, text.col=col, bty="n")
 ## Check how much genes are never expressed in our 8 samples
 table(rowSums(x$counts==0)==8)
 
-## Keep only genes which are expressed in at least 1 group (i.e 4
-## samples in our case), i.e with log-CPM > 0
+                                        # TO EDIT
+## Keep only genes which are expressed in at least 1 group (smallest group) with log-CPM > 0
 keep.exprs <- rowSums(lcpm>1)>=2
 x <- x[keep.exprs,keep.lib.sizes=FALSE]
 
@@ -81,14 +83,18 @@ legend("topright", samplenames, text.col=col, bty="n")
 
 ## Trimmed mean of M-values normalization (TMM)
 ## Before
-boxplot(lcpm, las=2, col=col, main="")
+boxplot(lcpm, col=col, main="", xaxt="n")
+axis(1, seq(1,6), labels=F)
+text(seq(1,6), par("usr")[3]-1.5, labels=samplenames, srt=45, adj=c(1,1,1,1), xpd=T, cex=0.6)
 title(main="A. Filtered data", ylab="Log-cpm")
 
 ## After
 x <- calcNormFactors(x, method="TMM")
 x$samples$norm.factors
 lcpm <- cpm(x, log=TRUE)
-boxplot(lcpm, las=2, col=col, main="")
+boxplot(lcpm, col=col, main="", xaxt="n")
+axis(1, seq(1,6), labels=F)
+text(seq(1,6), par("usr")[3]-1.5, labels=samplenames, srt=45, adj=c(1,1,1,1), xpd=T, cex=0.6)
 title(main="B. Normalized data", ylab="Log-cpm")
 
 ## Exploratory plot of differential expression
@@ -105,7 +111,6 @@ col.lane <- lane
 plotMDS(lcpm, labels=lane, col=as.numeric(lane)+3)
 title(main="B. Sample lane")
 
-
 ## In case second grouping (for example by sequencing lanes)
 ##col.lane <- lane
 ##levels(col.lane) <- brewer.pal(nlevels(col.lane), "Set2")
@@ -116,11 +121,13 @@ title(main="B. Sample lane")
 # Cannot install this package ! Check the article for its use.
 #library(Glimma)
 
+                                        # TO EDIT
 # Creating design of the differential expression analysis
 design <- model.matrix(~0+group) #(~0+group+othergroup+...)
 colnames(design) <- gsub("group", "", colnames(design))
 design
 
+                                        # TO EDIT
 ## Creating the contrasts for the pairwise comparisons
 contr.matrix <- makeContrasts(
     dela.vs.tg = dela-tg, ## more contrast can be added here (see article)
@@ -158,25 +165,26 @@ summary(dt)
 ## Output all results
 write.fit(tfit, dt, file="results.txt")
 
+                                        # TO EDIT
 ## Examine individual DE genes (check sorted by pvalues)
-
 dmso.vs.tcdd <- topTreat(tfit, coef=1, n=Inf) ## coef=2 for next pairwise comparison ...
 head(dmso.vs.tcdd)
 
-## Graphical representation of DEG
+                                        # TO EDIT
+## Graphical representation of DEG (change status for other comparisons)
 plotMD(tfit, column=1, status=dt[,1], main=colnames(tfit)[1], xlim=c(-8,13))
 
 ## Glimma possibilities again (check article)
 
 ## Making a heatmap of the 100 highest DEG
-library(gplots)
 dmso.vs.tcdd.topgenes <- dmso.vs.tcdd$ENSEMBL[1:80]
 i <- which(v$genes$ENSEMBL %in% dmso.vs.tcdd.topgenes)
-mycol <- colorpanel(1000, "blue", "white", "red")
-heatmap.2(v$E[i,], scale="row",
-          labRow=v$genes$SYMBOL[i], labCol=group,
-          col=mycol, trace="none", density.info="none",
-          margin=c(8,6), lhei=c(2,10), dendrogram='column')
+
+library(pheatmap)
+d <- v$E[i,]
+# That's the only option I found to not have rognated xlabels (labels_col parameter in pheatmap rognate them)
+#colnames(d) <- group
+pheatmap(d, scale='row', labels_row=v$genes$SYMBOL[i], cex=0.8)
 
 ## Camera method (check article)
 ## Seems to work with EntrezID, so have to figure out how to make the conversion

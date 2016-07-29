@@ -10,7 +10,7 @@ files <- list.files("~/analysis/muchardt/2016_07_12/v3/star/counts", full.name=T
 x <- readDGE(files, columns=c(1,2))
 
 ## Changing for nicer names
-colnames(x) <- substring(colnames(x), 21, nchar(colnames(x)) - 4)
+colnames(x) <- basename(colnames(x))
 samplenames <- colnames(x)
 
 ## 4 control and 4 treated with dioxin
@@ -67,7 +67,7 @@ dim(x)
 
 lcpm <- cpm(x, log=TRUE)
 plot(density(lcpm[,1]), col=col[1], lwd=2, ylim=c(0, 0.60), las=2, main="", xlab="")
-title(main="B. filtered data", xlab="Log-cpm")
+title(main="B. Filtered data", xlab="Log-cpm")
 abline(v=0, lty=3)
 for (i in 2:nsamples){
     den <- density(lcpm[,i])
@@ -77,14 +77,18 @@ legend("topright", samplenames, text.col=col, bty="n")
 
 ## Trimmed mean of M-values normalization (TMM)
 ## Before
-boxplot(lcpm, las=2, col=col, main="")
-title(main="A. Raw data", ylab="Log-cpm")
+boxplot(lcpm, col=col, main="", xaxt="n",)
+axis(1, seq(1,8), labels=F)
+text(seq(1,8), par("usr")[3]-1.5, labels=samplenames, srt=45, adj=c(1,1,1,1), xpd=T)
+title(main="A. Filtered data", ylab="Log-cpm")
 
 ## After
 x <- calcNormFactors(x, method="TMM")
 x$samples$norm.factors
 lcpm <- cpm(x, log=TRUE)
-boxplot(lcpm, las=2, col=col, main="")
+boxplot(lcpm, col=col, main="", xaxt="n")
+axis(1, seq(1,8), labels=F)
+text(seq(1,8), par("usr")[3]-1.5, labels=samplenames, srt=45, adj=c(1,1,1,1), xpd=T)
 title(main="B. Normalized data", ylab="Log-cpm")
 
 ## Exploratory plot of differential expression
@@ -155,14 +159,16 @@ plotMD(tfit, column=1, status=dt[,1], main=colnames(tfit)[1], xlim=c(-8,13))
 ## Glimma possibilities again (check article)
 
 ## Making a heatmap of the 100 highest DEG
-library(gplots)
+##library(gplots)
 dmso.vs.tcdd.topgenes <- dmso.vs.tcdd$ENSEMBL[1:80]
 i <- which(v$genes$ENSEMBL %in% dmso.vs.tcdd.topgenes)
-mycol <- colorpanel(1000, "blue", "white", "red")
-heatmap.2(v$E[i,], scale="row",
-          labRow=v$genes$SYMBOL[i], labCol=group,
-          col=mycol, trace="none", density.info="none",
-          margin=c(8,6), lhei=c(2,10), dendrogram='column')
+
+library(pheatmap)
+d <- v$E[i,]
+# That's the only option I found to not have rognated xlabels (labels_col parameter in pheatmap rognate them)
+colnames(d) <- group
+pheatmap(d, scale='row', labels_row=v$genes$SYMBOL[i], cex=0.8)
+
 
 ## Camera method (check article)
 ## Seems to work with EntrezID, so have to figure out how to make the conversion
