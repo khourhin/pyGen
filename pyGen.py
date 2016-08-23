@@ -13,13 +13,11 @@ import logging as log
 # Starting with Github ....
 ################################################################################
 
-#-------------------------------------------------------------------------------
 def sample_fasta(fasta, nseq):
     seq_d = bfas.fasta_2_dict(fasta)
     seq_i = bfas.get_random_seqs(seq_d, nseq)
     bfas.write_as_fas(seq_i)
 
-#-------------------------------------------------------------------------------
 def subset_fasta(fasta, seqids_l):
     """
     Get a subset of the fasta file with only the sequence which ids are in 
@@ -29,13 +27,11 @@ def subset_fasta(fasta, seqids_l):
     seq_i = bfas.filter_by_id(seq_d, seqids_l)
     bfas.write_as_fas(seq_i)
 
-#-------------------------------------------------------------------------------
 def fasta_stats(fasta, graphs_path=None):
 
     seq_d = bfas.fasta_2_dict(fasta)
     bfas.make_summary(seq_d, graphs_path)
 
-#-------------------------------------------------------------------------------
 def blastN(query, db, outfile):
     """
     Perform a classical blastN of the query against the db. 
@@ -45,7 +41,6 @@ def blastN(query, db, outfile):
     blst.format_db(db)
     blst.do_blastN(query, db, outfile)
 
-#-------------------------------------------------------------------------------
 def file_stats(infile):
     
     if fc.isFasta(infile):
@@ -60,10 +55,8 @@ def file_stats(infile):
 #        fastq_stats(infile)
     else:
         raise IOError("Formats others than Fasta or FastQ are not yet supported")
-        
-#-------------------------------------------------------------------------------
-if __name__ == "__main__":
 
+if __name__ == "__main__":
 
     # So far set by default:
     BLAST_OUT = "blast_out.tab"
@@ -86,7 +79,7 @@ if __name__ == "__main__":
             log.info("Verbose is ON")
         else:
             log.basicConfig(format="%(levelname)s: %(message)s")
-        
+            
         if args.stats:
             file_stats(args.infile)
 

@@ -2,16 +2,16 @@ import logging as log
 import numpy
 import basics_nuc_seq as bns
 
-#-------------------------------------------------------------------------------
+
 def get_casava_vers(fastq):
     """
     Check for the casava illumina pipeline version
     This only checks the first id line
     """
-    
+
     with open(fastq, "r") as f:
         line1 = f.readline().rstrip()
-        
+
         if line1.endswith("/1") or line1.endswith("/2"):
             return "<1.8"
 
@@ -19,11 +19,11 @@ def get_casava_vers(fastq):
             line1 = line1.split()[1]
             if line1.startswith("1") or line1.startswith("2"):
                 return ">1.8"
-                
+
             else:
                 return "UNKNOWN"
 
-#-------------------------------------------------------------------------------
+
 def get_reads(fastq):
     """
     Return an iterator with all the reads
@@ -44,7 +44,7 @@ def get_reads(fastq):
             raise IOError(
                 "Can not read the fastq file: {}\nIs it a properly formatted fastq ?".format(fastq))
 
-#-------------------------------------------------------------------------------
+
 def fastq_stats(fastq):
     """
     Return stats about the fastq file
@@ -58,24 +58,24 @@ def fastq_stats(fastq):
     N_count = 0
 
     log.info("Computing statistics ...")
-    
+
     for seq_id, seq, qual in rds:
 
-        rds_len.append( len(seq) )
-        GC_content.append( bns.get_seq_GC(seq) )
+        rds_len.append(len(seq))
+        GC_content.append(bns.get_seq_GC(seq))
         N_count += seq.count("N")
 
-    print "Reads statistics:"
-    print "Total #reads: {}M".format( len(rds_len) /1.0e6 )
-    print "Total #bases: {}G".format( sum(rds_len) / 1.0e9 )
-    print "Total #Ns: {}".format( N_count )
-    print "Min length: {}".format( min(rds_len) )
-    print "Max length: {}".format( max(rds_len) )
-    print "Mean length: {}".format( numpy.mean(rds_len) )
-    print "Standard deviation: {}".format( numpy.std(rds_len) )
-    print "Mean GC content: {}".format( numpy.mean(GC_content) )
-    
-#-------------------------------------------------------------------------------
+    print("Reads statistics:")
+    print("Total #reads: {}M".format(len(rds_len) / 1.0e6))
+    print("Total #bases: {}G".format(sum(rds_len) / 1.0e9))
+    print("Total #Ns: {}".format(N_count))
+    print("Min length: {}".format(min(rds_len)))
+    print("Max length: {}".format(max(rds_len)))
+    print("Mean length: {}".format(numpy.mean(rds_len)))
+    print("Standard deviation: {}".format(numpy.std(rds_len)))
+    print("Mean GC content: {}".format(numpy.mean(GC_content)))
+
+
 def filter_qual(fastq, fastq_out):
     """
     Perform the filter from Zhao 2011
@@ -115,7 +115,7 @@ def filter_qual(fastq, fastq_out):
                     last_qual = quals[-1]
 
                 fout.write("{0}\n{1}\n{2}\n{3}\n".format(seq_id, seq, "+", qual))
-
+                
 #-------------------------------------------------------------------------------
 def get_fq_ids(fastq):
     """
