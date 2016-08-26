@@ -3,7 +3,12 @@ suppressPackageStartupMessages(library("JunctionSeq"))
 juncSeqPipe <- function(sampleMeta, gffFile, countFolder, outPrefix){
 
     sampleMeta <- read.table(sampleMeta, header=TRUE, stringsAsFactors=FALSE)
+    message("Using this metadata")
+    message(sampleMeta)
     countFiles <- list.files(countFolder)
+    message("Using this CountFiles")
+    message(countFiles)
+
 
     jscs <- runJunctionSeqAnalyses(sample.files = countFiles,
                                    sample.names = sampleMeta[,1],
@@ -43,4 +48,3 @@ juncSeqPipe(args[1], args[2], args[3], args[4])
 ##-------------------------------------------------------------------------------
                                         # EXAMPLE
 ##-------------------------------------------------------------------------------
-
