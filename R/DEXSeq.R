@@ -7,7 +7,7 @@ suppressPackageStartupMessages(library( "DEXSeq" ))
 pdf()
 
 # Threads
-NTHREADS = MulticoreParam(workers=30)
+NTHREADS = MulticoreParam(workers=8)
 
 ## TO EDIT
 countFiles <- list.files("../dexseq/counts_considered_stranded", full.names=TRUE)

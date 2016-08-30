@@ -33,6 +33,8 @@ message("Starting JunctionSeq analysis...")
 args = commandArgs(trailingOnly = TRUE)
 juncSeqPipe(args[1], args[2], args[3], args[4])
 
+save.image()
+
 ##-------------------------------------------------------------------------------
                                         # USAGE
 ##-------------------------------------------------------------------------------
