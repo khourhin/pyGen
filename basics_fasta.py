@@ -3,7 +3,7 @@ import biographs as biog
 import numpy
 import random
 
-#-------------------------------------------------------------------------------
+
 def fasta_2_dict(fas_file, simple_ID=True):
     """
     Get a dictionnary from fasta file with:
@@ -12,37 +12,37 @@ def fasta_2_dict(fas_file, simple_ID=True):
 
     If simple_ID is True, then the seq_id in the dictionnary will be
     the original one truncated after the first white space.
-    
+
     WORKING
     """
     with open(fas_file, "r") as f:
         seq_d = {}
-                
-        # split each time a ">" in encountered        
+
+        # split each time a ">" in encountered
         fasta = f.read().split('>')[1:]
 
-        # split the strings in 3 items tuple: seq id, the sep, and the seq        
-        tmp = [ seq.partition("\n") for seq in fasta ]
+        # split the strings in 3 items tuple: seq id, the sep, and the seq
+        tmp = [seq.partition("\n") for seq in fasta]
 
-        # build a dictionnary with key=seq id, value=seq        
-        for i in range( len( tmp ) ):
-            
+        # build a dictionnary with key=seq id, value=seq
+        for i in range(len(tmp)):
+
             if simple_ID:
-                # for ex: for trinity output, split()[0] removes the len, path infos
-                seq_d[ tmp[i][0].split()[0] ] = tmp[i][2].replace( "\n", "").upper()                
+                # for ex: for trinity output, split()[0] removes the
+                # len, path infos
+                seq_d[tmp[i][0].split()[0]] = tmp[i][2].replace( "\n", "").upper()                
             else:
-                seq_d[ tmp[i][0] ] = tmp[i][2].replace( "\n", "").upper()
+                seq_d[tmp[i][0]] = tmp[i][2].replace( "\n", "").upper()
 
     # Check if no empty sequences
     empty_seqs = [k for k in seq_d if len(seq_d[k]) == 0]
     if empty_seqs:
-        raise IOError("Something seems wrong with this sequence:\n" 
+        raise IOError("Something seems wrong with this sequence:\n"
                       + "\n".join(empty_seqs))
 
     return seq_d
 
 
-#-------------------------------------------------------------------------------
 def filter_by_id(seq_d, seq_id_lst, startonly=False):
     """
     Yield tuples (seq_id, seq) from a LIST of selected ids
@@ -56,25 +56,25 @@ def filter_by_id(seq_d, seq_id_lst, startonly=False):
             for dictID in seq_d:
                 if dictID.startswith(seq_id):
                     yield (dictID, seq_d[dictID])
-        
-#-------------------------------------------------------------------------------
+
+
 def filter_by_len(seq_d, len_thres):
     """
     Yield tuples (seq_id,seq) of sequences with length >= len_thres
     """
     for seq_id in seq_d:
-        if len(seq_d[ seq_id ]) >= int(len_thres):
+        if len(seq_d[seq_id]) >= int(len_thres):
             yield (seq_id, seq_d[seq_id])
 
-#-------------------------------------------------------------------------------
+
 def get_random_seqs(seq_d, nseq):
     """
     Return an iterator of tuples for 'nseq' randomly selected sequences
     """
-    seqids_l = random.sample( seq_d.keys(), nseq)
+    seqids_l = random.sample(seq_d.keys(), nseq)
     return filter_by_id(seq_d, seqids_l)
 
-#-------------------------------------------------------------------------------
+
 def write_as_fas(seq_i):
     """
     Write to stdout a fasta file with  the selected seqs from the seq_ids LIST.
@@ -86,15 +86,15 @@ def write_as_fas(seq_i):
         # To cut seq lines each 80 characters
         while len(seq) > 80:
             print(seq[:80])
-            seq =  seq[80:]
+            seq = seq[80:]
         print(seq)
             
-#-------------------------------------------------------------------------------
+
 def make_summary(seq_d, graphs_path=None):
     """
     Print out a summary of nucleotide sequences statistics
     """
-    
+
     GCs_d = bns.get_all_GCs(seq_d)
     lens_d = bns.get_all_lens(seq_d)
     n_seq = len(seq_d)
@@ -110,10 +110,10 @@ def make_summary(seq_d, graphs_path=None):
     print "Min length:\t{0}".format(min(lens_d.values()))
     print "Max length:\t{0}".format(max(lens_d.values()))
     print "N50:\t{0}".format(N50)
-    print "Contigs in N50:\t{0}".format(len([x for x in lens_d.values() if x >= N50 ]))
+    print "Contigs in N50:\t{0}".format(len([x for x in lens_d.values()
+                                             if x >= N50]))
 
     # Graphs:
     if graphs_path:
-        biog.plot_hist(lens_d, graphs_path + "Contig_lengths_histo.png" )
+        biog.plot_hist(lens_d, graphs_path + "Contig_lengths_histo.png")
 
-#-------------------------------------------------------------------------------
