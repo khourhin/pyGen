@@ -42,8 +42,9 @@ save.image()
 ## $1: Table with headers:
 ## col1: sample names(same order as in countFolder)
 ## col2: conditions
-## $2: Flattened (see JunctionSeq manual) GFF file
-## $3: Path to folder with counts (see JunctionSeq for counting instructions)
+## $2: Flattened (see JunctionSeq manual) GFF.gz file
+## $3: Path to folder with counts (can be gz)
+## (see JunctionSeq for counting instructions) 
 ## The path SHOULD NOT end up with "/"
 ## $4: Prefix for the results
 ## $5: Number of threads
@@ -51,3 +52,4 @@ save.image()
 ##-------------------------------------------------------------------------------
                                         # EXAMPLE
 ##-------------------------------------------------------------------------------
+## time Rscript ~/Programming/pyGen/R/JunctionSeq.R sample_meta_2_3.tab JunctionSeq_flat_fr_stranded_copiedFromMuchardtest.gff.gz replicates_2_3 juncSeq_rep23 10
