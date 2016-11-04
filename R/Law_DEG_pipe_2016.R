@@ -1,5 +1,8 @@
-                                        # from Law et al 2016 in F1000Research
-                                        # RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR
+## from Law et al 2016 in F1000Research
+## RNA-seq analysis is easy as 1-2-3 with limma, Glimma and edgeR
+
+## TO IMPROVE:
+## Check to add NoiseqBio for ex
 
 library(edgeR)
 pdf()
