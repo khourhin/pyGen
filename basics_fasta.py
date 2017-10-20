@@ -101,16 +101,16 @@ def make_summary(seq_d, graphs_path=None):
     N50 = bns.get_N50(seq_d)
 
     # Stdout:
-    print "Total seqs:\t{0}".format(n_seq)
-    print "Total length (in nucl):\t{0}".format(sum(lens_d.values()))
-    print "Mean GC:\t{0:.2f}".format(sum(GCs_d.values()) / float(n_seq))
-    print "Mean length:\t{0:.2f}".format(sum(lens_d.values()) / float(n_seq))
-    print "Standard deviation:\t{0:.2f}".format(numpy.std(lens_d.values()))
-    print "Median length:\t{0}".format(numpy.median(lens_d.values()))
-    print "Min length:\t{0}".format(min(lens_d.values()))
-    print "Max length:\t{0}".format(max(lens_d.values()))
-    print "N50:\t{0}".format(N50)
-    print "Contigs in N50:\t{0}".format(len([x for x in lens_d.values() if x >= N50 ]))
+    print("Total seqs:\t{0}".format(n_seq))
+    print("Total length (in nucl):\t{0}".format(sum(lens_d.values())))
+    print("Mean GC:\t{0:.2f}".format(sum(GCs_d.values()) / float(n_seq)))
+    print("Mean length:\t{0:.2f}".format(sum(lens_d.values()) / float(n_seq)))
+    print("Standard deviation:\t{0:.2f}".format(numpy.std(lens_d.values())))
+    print("Median length:\t{0}".format(numpy.median(lens_d.values())))
+    print("Min length:\t{0}".format(min(lens_d.values())))
+    print("Max length:\t{0}".format(max(lens_d.values())))
+    print("N50:\t{0}".format(N50))
+    print("Contigs in N50:\t{0}".format(len([x for x in lens_d.values() if x >= N50 ])))
 
     # Graphs:
     if graphs_path:

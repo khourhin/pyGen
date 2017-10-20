@@ -59,9 +59,9 @@ def prep_for_plot(data, out_graph):
         xs.extend(xs_tmp)
         ys.extend([ x[2] for x in dlist ])
         cs.extend( [color] * len(dlist) )
-        print "Chromosome: %s" % chro
-        print "min: %e" % min(xs_tmp)
-        print "max: %e" % max(xs_tmp)
+        print("Chromosome: %s" % chro)
+        print("min: %e" % min(xs_tmp))
+        print("max: %e" % max(xs_tmp))
         last_pos = xs_tmp[-1]
 
         # for ticking chr names
