@@ -9,6 +9,7 @@ import sqlite3 as lite
 import logging as log
 import work_on_vcf as wvcf
 import os
+import click
 
 #-------------------------------------------------------------------------------
 def parseGtfAttributes(attrs_str):
@@ -224,10 +225,24 @@ def snpPipeFsts(gtf, vcf, go_terms, out_prefix, gq_thres, fst_f):
     fetch_snps_location(db, snps_zip, go_dict, out_prefix, fst_f)
     wvcf.print_genotypes(vcf, gq_thres, out_prefix, db)
 
+@click.command()
+@click.argument('gtf')
+@click.argument('vcf')
+@click.argument('go_terms')
+@click.argument('out_prefix')
+@click.argument('gq_thres', type=float)
+@click.argument('fst_f')
+def main(gtf, vcf, go_terms, out_prefix, gq_thres, fst_f):
+
+    snpPipeFsts(gtf, vcf, go_terms, out_prefix, gq_thres, fst_f)
     
 #-------------------------------------------------------------------------------
 # For TESTING
 if __name__ == "__main__":
+
+    main()
+
+    
     import sys
 
     snpPipeFsts("/home/tiennou/bin/pyGen/demo_data/Zfinch/Taeniopygia_guttata.taeGut3.2.4.77.gtf",
