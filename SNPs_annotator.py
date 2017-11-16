@@ -196,7 +196,11 @@ def fetch_snps_location(db, snps_zip, go_dict, out_prefix, fst_f=False):
                     fout.write("%s\t%s\t%s\t%s\t%s\t%s\n" % (gene_id, gene_name,
                                                                  chromo, start, end, GOs))                    
             else:
-                fout.write("NA\tNA\tNA\tNA\tNA\tNA\tNA\n")
+                if fst_f:
+                    fst = fst_d[c, p]
+                    fout.write("NA\tNA\tNA\tNA\tNA\t{}\tNA\n".format(fst))
+                else:
+                    fout.write("NA\tNA\tNA\tNA\tNA\tNA\tNA\n")
             
             count += 1
 
@@ -245,8 +249,8 @@ if __name__ == "__main__":
     
     import sys
 
-    snpPipeFsts("/home/tiennou/bin/pyGen/demo_data/Zfinch/Taeniopygia_guttata.taeGut3.2.4.77.gtf",
-                "/home/tiennou/work/Junco/analysis/final/snps/round2_HQ_SNP.vcf",
-                "/home/tiennou/bin/pyGen/demo_data/Zfinch/zfinch_go_annot.csv",
-                "testsnp",20,"/home/tiennou/work/Junco/analysis/final/snps/fsts/test_ORJU_all_vs_SLJU_all_out.weir.fst")
+    #snpPipeFsts("/home/tiennou/bin/pyGen/demo_data/Zfinch/Taeniopygia_guttata.taeGut3.2.4.77.gtf",
+    #            "/home/tiennou/work/Junco/analysis/final/snps/round2_HQ_SNP.vcf",
+    #            "/home/tiennou/bin/pyGen/demo_data/Zfinch/zfinch_go_annot.csv",
+    #            "testsnp",20,"/home/tiennou/work/Junco/analysis/final/snps/fsts/test_ORJU_all_vs_SLJU_all_out.weir.fst")
 #    print getFsts(sys.argv[1])
