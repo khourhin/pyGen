@@ -34,8 +34,8 @@ def create_gtf_db(gtf):
     Return the name of the db
     """
 
-    outdb=os.path.basename(gtf)
-    outdb=os.path.splitext(outdb)[0]
+    #outdb=os.path.basename(gtf)
+    outdb=os.path.splitext(gtf)[0]
     outdb=outdb + ".db"
 
     if os.path.isfile(outdb):
@@ -198,7 +198,7 @@ def fetch_snps_location(db, snps_zip, go_dict, out_prefix, fst_f=False):
             else:
                 if fst_f:
                     fst = fst_d[c, p]
-                    fout.write("NA\tNA\tNA\tNA\tNA\t{}\tNA\n".format(fst))
+                    fout.write("NA\tNA\tNA\tNA\tNA\t{0}\t{1}\n".format(fst, ['']))
                 else:
                     fout.write("NA\tNA\tNA\tNA\tNA\tNA\tNA\n")
             
